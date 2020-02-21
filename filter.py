@@ -9,22 +9,22 @@ eq  = lambda n: lambda x: x == n
 gte = lambda n: lambda x: x >= n
 gt  = lambda n: lambda x: x >  n
 
-isLT = lambda n: Predicate(lt(n))
-isEq = lambda n: Predicate(eq(n))
-isGT = lambda n: Predicate(gt(n))
+isLT = lambda n: Pred(lt(n))
+isEq = lambda n: Pred(eq(n))
+isGT = lambda n: Pred(gt(n))
 
 
-class Predicate (object):
+class Pred (object):
 
     def __init__ (self, pred):
         self.pred = pred
         self.run  = pred # a comfy alias
 
     def __and__ (self, other):
-        return Predicate(lambda x: self.run(x) and other.run(x))
+        return Pred(lambda x: self.run(x) and other.run(x))
 
     def __or__ (self, other):
-        return Predicate(lambda x: self.run(x) or other.run(x))
+        return Pred(lambda x: self.run(x) or other.run(x))
 
 
 """
