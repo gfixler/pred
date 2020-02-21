@@ -26,6 +26,9 @@ class Pred (object):
     def __or__ (self, other):
         return Pred(lambda x: self.run(x) or other.run(x))
 
+    def __neg__ (self):
+        return Pred(lambda x: not self.run(x))
+
 
 """
 # examples of composition, usage
