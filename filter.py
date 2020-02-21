@@ -79,7 +79,7 @@ class Pred (object):
         predicates in the composition are run internally, and the
         results combined in boolean fashion, with no intermediate
         structures (this is called "fusion"), and no need to write
-        à la carte solutions. Just glue a few pieces together, when
+        a la carte solutions. Just glue a few pieces together, when
         needed. If it turns out to be useful, give it a name.
     """
 
