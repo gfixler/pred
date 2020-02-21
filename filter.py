@@ -18,9 +18,7 @@ class Filter (object):
 
     def __init__ (self, pred):
         self.pred = pred
-
-    def run (self, input):
-        return self.pred(input)
+        self.run = pred # a comfy alias
 
     def __and__ (self, other):
         return Filter(lambda x: self.run(x) and other.run(x))
