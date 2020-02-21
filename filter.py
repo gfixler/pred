@@ -5,9 +5,12 @@ This script is a test bed for my composable filters concept.
 class Pred (object):
 
     """
-    Pred takes a predicate function, i.e. a function
-    that takes one argument, and returns a boolean that
-    answers some True/False question about it.
+    Pred takes a predicate function, i.e. a function that takes one argument,
+    and returns a boolean that answers some True/False question about it.
+
+    Don't use the "dunder" (double underscore) methods defined on this class,
+    like __and__; instead use the operators they define, like &. Composition
+    through these few boolean operations are the core purpose of this class.
 
     Example comparison functions:
 
@@ -62,26 +65,24 @@ class Pred (object):
 
     Predicates "fuse"
 
-        A common way of filtering is filtering by one thing, then
-        filtering the results by another thing, etc. This visits
-        values more than once, and likely creates several intermediate
-        lists in memory. It's inefficient, and unnecessary.
+        A common way of filtering is filtering by one thing, then filtering the
+        results by another thing, etc. This visits values more than once, and
+        likely creates several intermediate lists in memory. It's inefficient,
+        and unnecessary.
 
-        Another option is to custom code filters, by writing functions
-        that manually do all of the things you want, and giving them
-        each a name. This is untenable after only a few filters exist,
-        as the number of combinations of things you might possibly
-        need, or even just be curious about, explodes.
+        Another option is to custom code filters, by writing functions that
+        manually do all of the things you want, and giving them each a name.
+        This is untenable after only a few filters exist, as the number of
+        combinations of things you might possibly need, or even just be curious
+        about, explodes.
 
-        Composition of base predicates into more complex predicates,
-        and even composition of composed predicates gets around the
-        issues listed above. Values are visited once, and all of the
-        predicates in the composition are run internally, and the
-        results combined in boolean fashion, with no intermediate
-        structures (this is called "fusion"), and no need to write
-        a la carte solutions. Just glue a few pieces together, when
-        needed. If it turns out to be useful, give it a name.
-    """
+        Composition of base predicates into more complex predicates, and even
+        composition of composed predicates gets around the issues listed above.
+        Values are visited once, and all of the predicates in the composition
+        are run internally, and the results combined in boolean fashion, with
+        no intermediate structures (this is called "fusion"), and no need to
+        write a la carte solutions. Just glue a few pieces together, when
+        needed. If it turns out to be useful, give it a name. """
 
     def __init__ (self, pred):
         self.pred = pred
