@@ -1,7 +1,3 @@
-"""
-This script is a test bed for my composable filters concept.
-"""
-
 class Pred (object):
 
     """
@@ -65,24 +61,55 @@ class Pred (object):
 
     Predicates "fuse"
 
-        A common way of filtering is filtering by one thing, then filtering the
-        results by another thing, etc. This visits values more than once, and
-        likely creates several intermediate lists in memory. It's inefficient,
-        and unnecessary.
+        Consider this line of code:
 
-        Another option is to custom code filters, by writing functions that
-        manually do all of the things you want, and giving them each a name.
-        This is untenable after only a few filters exist, as the number of
-        combinations of things you might possibly need, or even just be curious
-        about, explodes.
+            filter(f, filter(g, xs))
+
+        We have some xs, and we're first filtering them by some function, g,
+        and then we're taking the result, and filtering it again by some
+        function, f. In many languages, this would create an intermediate list
+        to hold the results of the g filtering, which would then be passed to
+        the f filtering. If we could instead 'fuse' f and g, by composing them
+        together into a new function, we could give that function to filter,
+        and traverse the list only once. This is how the composed predicates
+        work here.
+
+    Thoughts...
+
+        We talked about how many systems can't fuse, and thus traverse
+        structures many times, creating intermediate structures in between, and
+        how this class helps avoid that.
+
+        Another option for composed filters is to custom code filters, by
+        writing functions that manually do all of the things you want, and
+        giving them each a name. This is untenable after only a few filters
+        exist, as the number of combinations of things you might possibly need,
+        or even just be curious about, explodes.
+
+        A third option is to create a domain specific language (DSL) around
+        your filtering needs, and then write a parser that can turn queries in
+        that language into code. This is a big undertaking, and requires a lot
+        of micromanaging of the parser, tests, debugging, etc., to get working,
+        and keep working as needs change.
 
         Composition of base predicates into more complex predicates, and even
         composition of composed predicates gets around the issues listed above.
         Values are visited once, and all of the predicates in the composition
         are run internally, and the results combined in boolean fashion, with
-        no intermediate structures (this is called "fusion"), and no need to
-        write a la carte solutions. Just glue a few pieces together, when
-        needed. If it turns out to be useful, give it a name. """
+        no intermediate structures (this is called "fusion").
+
+        There's no need to write a ton of a la carte solutions. Just glue a few
+        premade pieces together, as and when needed. If it turns out to be
+        useful, give it a name. It's also to create new predicates. They're
+        just functions that return a boolean.
+
+        There's also no interoperation to consider. Everything is separate,
+        composable pieces, each being simple to create in isolation, and
+        automatically usable with every other piece.
+
+        Finally, the code needed to make this work is simple to test, easy to
+        reason about, and vanishingly small.
+        """
 
     def __init__ (self, pred):
         self.pred = pred
