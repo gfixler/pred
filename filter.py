@@ -26,7 +26,7 @@ class Pred (object):
 
     Predicates are composable via & (AND) and | (OR):
 
-        # decide if x is (<2) OR (>6) or (==4)
+        # decide if x is (<2) OR (>6) OR (==4)
         (isLT(2) | isGT(6) | isEq(4)).run(x)
 
     Predicates are negatable via - (negation):
@@ -35,7 +35,7 @@ class Pred (object):
         (-isEq(3)).run(x)
 
         # note: dot notation binds tighter than negation, sadly,
-        #       so you'll have to group it with parentheses
+        #       so you'll have to group the (-) with parentheses
 
     Predicates map:
 
@@ -54,7 +54,7 @@ class Pred (object):
         # you can assign them to variables
         isValidWeekdayNum = isGTE(1) & isLTE(7)
         if (-isValidWeekdayNum).run(8):
-            # will raise, 8 is invalid
+            # the following will raise; 8 is invalid
             raise RuntimeError, "invalid weekday number"
 
         # you can also pass them to and return them from functions
@@ -76,36 +76,47 @@ class Pred (object):
 
     Thoughts...
 
-        We talked about how many systems can't fuse, and thus traverse
-        structures many times, creating intermediate structures in between, and
-        how this class helps avoid that.
+        We mentioned how one option for filtering is nesting filters, and how
+        this can lead to the creatin of intermediary data structures, and
+        increased time complexity through multiple passes. Composable filtering
+        functions don't suffer these two issues, because they "fuse."
 
-        Another option for composed filters is to custom code filters, by
-        writing functions that manually do all of the things you want, and
-        giving them each a name. This is untenable after only a few filters
-        exist, as the number of combinations of things you might possibly need,
-        or even just be curious about, explodes.
+        "Fusion" is when chains of things, like mappings, filterings, and
+        foldings (reducings), have their individual functionality composed
+        together, so everything can happen in a single pass.
+
+        Another option for composed filters is to custom code them, by writing
+        functions that manually do all of the things you want, manually fusing
+        away the extra space and time complexity (and then thinking up names
+        for each). This is untenable after only a few filters exist, though, as
+        the number of combinations of things you might ever need explodes, akin
+        to trying to think of all the combinations of command line programs you
+        might ever want.
 
         A third option is to create a domain specific language (DSL) around
         your filtering needs, and then write a parser that can turn queries in
         that language into code. This is a big undertaking, and requires a lot
         of micromanaging of the parser, tests, debugging, etc., to get working,
-        and keep working as needs change.
+        and keep working as needs change. In contrast, composed predicates
+        stack in any order, whenever and wherever you want. When you create a
+        new one, you don't have to do anything for it to Just Work™ with all
+        the existing ones.
 
         Composition of base predicates into more complex predicates, and even
-        composition of composed predicates gets around the issues listed above.
-        Values are visited once, and all of the predicates in the composition
-        are run internally, and the results combined in boolean fashion, with
-        no intermediate structures (this is called "fusion").
+        further composition of existing composed predicates gets around the
+        issues listed above. Values are visited once, and all of the predicates
+        in the composition are run internally, with the results combined in
+        boolean fashion, with no intermediate structures.
 
         There's no need to write a ton of a la carte solutions. Just glue a few
         premade pieces together, as and when needed. If it turns out to be
-        useful, give it a name. It's also to create new predicates. They're
-        just functions that return a boolean.
+        useful, give it a name. It's also easy to create new predicates.
+        They're just functions that return a boolean. You can write them
+        in-place using the "lambda" keyword.
 
         There's also no interoperation to consider. Everything is separate,
-        composable pieces, each being simple to create in isolation, and
-        automatically usable with every other piece.
+        composable pieces, each being simple to create and test in isolation,
+        and automatically usable with every other piece.
 
         Finally, the code needed to make this work is simple to test, easy to
         reason about, and vanishingly small.
