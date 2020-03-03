@@ -3,6 +3,9 @@ class Pred (object):
     def __init__ (self, pred):
         self.pred = pred
 
+    def __call__ (self, *args):
+        return self.pred(*args)
+
     def __and__ (self, other):
         return Pred(lambda x: self(x) and other(x))
 
@@ -11,7 +14,4 @@ class Pred (object):
 
     def __neg__ (self):
         return Pred(lambda x: not self(x))
-
-    def __call__ (self, *args):
-        return self.pred(*args)
 
