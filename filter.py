@@ -4,7 +4,10 @@ class Pred (object):
         self.pred = pred
 
     def __call__ (self, *args):
-        return self.pred(*args)
+        try:
+            return self.pred(*args)
+        except:
+            return False
 
     def __and__ (self, other):
         return Pred(lambda x: self(x) and other(x))
