@@ -1,8 +1,12 @@
 class Pred (object):
 
-    def __init__ (self, pred=None):
-        self._op = "PRED"
+    def __init__ (self, pred=None, op="PRED", left=None, right=None):
+        self._op = op
         self._pred = pred
+        if left:
+            self._left = left
+        if right:
+            self._right = right
 
     def __call__ (self, x):
         if self._op == "PRED":
@@ -15,22 +19,11 @@ class Pred (object):
             return not self._right(x)
 
     def __and__ (self, other):
-        p = Pred()
-        p._op = "AND"
-        p._left = self
-        p._right = other
-        return p
+        return Pred(op="AND", left=self, right=other)
 
     def __or__ (self, other):
-        p = Pred()
-        p._op = "OR"
-        p._left = self
-        p._right = other
-        return p
+        return Pred(op="OR", left=self, right=other)
 
     def __neg__ (self):
-        p = Pred()
-        p._op = "NOT"
-        p._right = self
-        return p
+        return Pred(op="NOT", right=self)
 
