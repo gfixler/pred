@@ -23,11 +23,11 @@ class Pred (object):
 
     def ast (self, indent=0):
         if self._op == "PRED":
-            return ("PRED", [str(self._pred)])
+            return ("PRED", str(self._pred))
         elif self._op == "AND":
-            return ("AND", [self._left.ast(), self._right.ast()])
+            return ("AND", (self._left.ast(), self._right.ast()))
         elif self._op == "OR":
-            return ("OR", [self._left.ast(), self._right.ast()])
+            return ("OR", (self._left.ast(), self._right.ast()))
         elif self._op == "NOT":
-            return ("NOT", [self._right.ast()])
+            return ("NOT", self._right.ast())
 
