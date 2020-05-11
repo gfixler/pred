@@ -23,10 +23,11 @@ class Pred (object):
 
     def ast (self, indent=0):
         if self._op == "PRED":
-            return ("  " * indent) + str(self._pred) + "\n"
+            return ("PRED", [str(self._pred)])
         elif self._op == "AND":
-            return ("  " * indent) + "AND\n" + self._left.ast(indent=indent+2) + self._right.ast(indent=indent+2)
+            return ("AND", [self._left.ast(), self._right.ast()])
         elif self._op == "OR":
-            return ("  " * indent) + "OR\n" + self._left.ast(indent=indent+2) + self._right.ast(indent=indent+2)
+            return ("OR", [self._left.ast(), self._right.ast()])
         elif self._op == "NOT":
-            return ("  " * indent) + "NOT\N" + self._right.ast(indent=indent+2)
+            return ("NOT", [self._right.ast()])
+

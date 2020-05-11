@@ -37,3 +37,35 @@ class Test_Pred (unittest.TestCase):
         expected = [False, True, False, True, False, False, True, False, True, False]
         self.assertEquals(map(p, range(10)), expected)
 
+    def test_ast_PRED (self):
+        (op, kids) = Pred(ident).ast()
+        self.assertEquals(op, "PRED")
+        self.assertTrue("function <lambda> at" in kids[0])
+
+    def test_ast_AND (self):
+        (op, kids) = (gt(3) & lt(5)).ast()
+        self.assertEqual(op, "AND")
+        (lop, lkids) = kids[0]
+        (rop, rkids) = kids[1]
+        self.assertEquals(lop, "PRED")
+        self.assertEquals(rop, "PRED")
+        self.assertTrue("function <lambda> at" in lkids[0])
+        self.assertTrue("function <lambda> at" in rkids[0])
+
+    def test_ast_OR (self):
+        (op, kids) = (gt(3) & lt(5)).ast()
+        self.assertEqual(op, "AND")
+        (lop, lkids) = kids[0]
+        (rop, rkids) = kids[1]
+        self.assertEquals(lop, "PRED")
+        self.assertEquals(rop, "PRED")
+        self.assertTrue("function <lambda> at" in lkids[0])
+        self.assertTrue("function <lambda> at" in rkids[0])
+
+    def test_ast_NOT (self):
+        (op, kids) = (-Pred(ident)).ast()
+        self.assertEquals(op, "NOT")
+        (nop, nkids) = kids[0]
+        self.assertEquals(nop, "PRED")
+        self.assertTrue("function <lambda> at" in nkids[0])
+
