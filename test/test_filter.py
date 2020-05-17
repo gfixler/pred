@@ -6,9 +6,12 @@ from ..filter import Pred
 
 ident = lambda x: x
 
-lt  = lambda n: Pred(lambda x: x <  n, name="<" + str(n))
-eq  = lambda n: Pred(lambda x: x == n, name="==" + str(n))
-gt  = lambda n: Pred(lambda x: x >  n, name=">" + str(n))
+true = Pred(lambda _: True, name="True")
+false = Pred(lambda _: False, name="False")
+
+lt  = lambda n: Pred(lambda x: x <  n, name="(<" + str(n) + ")")
+eq  = lambda n: Pred(lambda x: x == n, name="(==" + str(n) + ")")
+gt  = lambda n: Pred(lambda x: x >  n, name="(>" + str(n) + ")")
 
 
 class Test_Pred (unittest.TestCase):
@@ -82,4 +85,10 @@ class Test_Pred (unittest.TestCase):
 
     def test_str_OR_named (self):
         self.assertTrue(str(gt(3) | lt(5)), ">3 | <5")
+
+    def test_str_AndOrNot_unparenthesizedOr (self):
+        self.assertEquals(str(gt(3) | lt(5) & ~eq(7)), "(>3) | (<5) & ~(==7)")
+
+    def test_str_AndOrNot_parenthesizedOr (self):
+        self.assertEquals(str((gt(3) | lt(5)) & ~eq(7)), "((>3) | (<5)) & ~(==7)")
 
