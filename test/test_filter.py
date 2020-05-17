@@ -7,9 +7,7 @@ from ..filter import Pred
 ident = lambda x: x
 
 lt  = lambda n: Pred(lambda x: x <  n)
-lte = lambda n: Pred(lambda x: x <= n)
 eq  = lambda n: Pred(lambda x: x == n)
-gte = lambda n: Pred(lambda x: x >= n)
 gt  = lambda n: Pred(lambda x: x >  n)
 
 
