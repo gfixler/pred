@@ -38,7 +38,7 @@ class Test_Pred (unittest.TestCase):
     def test_ast_PRED (self):
         (op, erand) = Pred(ident).ast()
         self.assertEquals(op, "PRED")
-        self.assertTrue("function <lambda> at" in erand)
+        self.assertTrue(callable(erand))
 
     def test_ast_AND (self):
         (op, erands) = (gt(3) & lt(5)).ast()
@@ -46,8 +46,8 @@ class Test_Pred (unittest.TestCase):
         ((lop, lerands), (rop, rerands)) = erands
         self.assertEquals(lop, "PRED")
         self.assertEquals(rop, "PRED")
-        self.assertTrue("function <lambda> at" in lerands)
-        self.assertTrue("function <lambda> at" in rerands)
+        self.assertTrue(callable(lerands))
+        self.assertTrue(callable(rerands))
 
     def test_ast_OR (self):
         (op, erands) = (gt(3) & lt(5)).ast()
@@ -55,13 +55,13 @@ class Test_Pred (unittest.TestCase):
         ((lop, lerands), (rop, rerands)) = erands
         self.assertEquals(lop, "PRED")
         self.assertEquals(rop, "PRED")
-        self.assertTrue("function <lambda> at" in lerands)
-        self.assertTrue("function <lambda> at" in rerands)
+        self.assertTrue(callable(lerands))
+        self.assertTrue(callable(rerands))
 
     def test_ast_NOT (self):
         (op, erand) = (~Pred(ident)).ast()
         self.assertEquals(op, "NOT")
         (nop, nerands) = erand
         self.assertEquals(nop, "PRED")
-        self.assertTrue("function <lambda> at" in nerands)
+        self.assertTrue(callable(nerands))
 
