@@ -25,13 +25,13 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(map(lt(5) | gt(5), [4, 5, 6]), [True, False, True])
 
     def test_canNOTPredicates (self):
-        self.assertEquals(map(-eq(3), [2, 3, 4]), [True, False, True])
+        self.assertEquals(map(~eq(3), [2, 3, 4]), [True, False, True])
 
     def test_canANDAndORAndNOTPredicates (self):
-        # p = ((gt(0) & lt(4)) | (gt(5) & lt(9))) & -(eq(2) | eq(7)) # confusing version
+        # p = ((gt(0) & lt(4)) | (gt(5) & lt(9))) & ~(eq(2) | eq(7)) # confusing version
         betwen0and4 = gt(0) & lt(4)
         betwen5and9 = gt(5) & lt(9)
-        not2or7 = -(eq(2) | eq(7))
+        not2or7 = ~(eq(2) | eq(7))
         p = (betwen0and4 | betwen5and9) & not2or7
         #             0      1     2      3     4      5      6     7      8     9
         expected = [False, True, False, True, False, False, True, False, True, False]
@@ -61,7 +61,7 @@ class Test_Pred (unittest.TestCase):
         self.assertTrue("function <lambda> at" in rerands)
 
     def test_ast_NOT (self):
-        (op, erand) = (-Pred(ident)).ast()
+        (op, erand) = (~Pred(ident)).ast()
         self.assertEquals(op, "NOT")
         (nop, nerands) = erand
         self.assertEquals(nop, "PRED")

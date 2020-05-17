@@ -18,7 +18,7 @@ class Pred (object):
     def __or__ (self, other):
         return Pred(op="OR", left=self, right=other)
 
-    def __neg__ (self):
+    def __invert__ (self):
         return Pred(op="NOT", right=self)
 
     def ast (self, indent=0):
