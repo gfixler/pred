@@ -1,3 +1,6 @@
+inParens = lambda x: "(" + str(x) + ")"
+
+
 class Pred (object):
 
     def __init__ (self, pred=None, name=None):
@@ -45,9 +48,12 @@ class Pred (object):
         if self._op == "PRED":
             return self._name
         elif self._op == "NOT":
-            return "~" + str(self._pred)
+            fn = inParens if self._pred._op in ["AND", "OR"] else str
+            return "~" + fn(self._pred)
         elif self._op == "AND":
-            return str(self._left) + " & " + str(self._right)
+            leftfn = inParens if self._left._op == "OR" else str
+            rightfn = inParens if self._right._op == "OR" else str
+            return leftfn(self._left) + " & " + rightfn(self._right)
         elif self._op == "OR":
             return str(self._left) + " | " + str(self._right)
 
