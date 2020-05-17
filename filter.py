@@ -30,7 +30,7 @@ class Pred (object):
         p._pred = self
         return p
 
-    def ast (self, indent=0):
+    def ast (self):
         if self._op == "PRED":
             return ("PRED", str(self._pred))
         elif self._op == "AND":
