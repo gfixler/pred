@@ -65,3 +65,9 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(nop, "PRED")
         self.assertTrue(callable(nerands))
 
+    def test_str_PRED (self):
+        self.assertTrue(str(Pred(ident)).startswith("<function <lambda> at"))
+
+    def test_str_NOT (self):
+        self.assertTrue(str(~Pred(ident)).startswith("~<function <lambda> at"))
+

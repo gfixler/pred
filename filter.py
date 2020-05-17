@@ -40,3 +40,13 @@ class Pred (object):
         elif self._op == "NOT":
             return ("NOT", self._pred.ast())
 
+    def __str__ (self):
+        if self._op == "PRED":
+            return str(self._pred)
+        elif self._op == "NOT":
+            return "~" + str(self._pred)
+        elif self._op == "AND":
+            return str(self._left) + " & " + str(self._right)
+        elif self._op == "OR":
+            return str(self._left) + " | " + str(self._right)
+
