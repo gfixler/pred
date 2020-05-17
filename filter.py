@@ -48,20 +48,12 @@ class Pred (object):
         if self._op == "PRED":
             return self._name
         elif self._op == "NOT":
-            if self._pred._op in ["AND", "OR"]:
-                return "~" + inParens(self._pred)
-            else:
-                return "~" + str(self._pred)
+            fn = inParens if self._pred._op in ["AND", "OR"] else str
+            return "~" + fn(self._pred)
         elif self._op == "AND":
-            if self._left._op == "OR":
-                left = inParens(self._left)
-            else:
-                left = str(self._left)
-            if self._right._op == "OR":
-                right = inParens(self._right)
-            else:
-                right = str(self._right)
-            return left + " & " + right
+            leftfn = inParens if self._left._op == "OR" else str
+            rightfn = inParens if self._right._op == "OR" else str
+            return leftfn(self._left) + " & " + rightfn(self._right)
         elif self._op == "OR":
             return str(self._left) + " | " + str(self._right)
 
