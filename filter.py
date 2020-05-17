@@ -1,8 +1,9 @@
 class Pred (object):
 
-    def __init__ (self, pred=None):
+    def __init__ (self, pred=None, name=None):
         self._op = "PRED"
         self._pred = pred
+        self._name = name if name else str(pred)
 
     def __call__ (self, x):
         if   self._op == "PRED": return self._pred(x)
@@ -42,7 +43,7 @@ class Pred (object):
 
     def __str__ (self):
         if self._op == "PRED":
-            return str(self._pred)
+            return self._name
         elif self._op == "NOT":
             return "~" + str(self._pred)
         elif self._op == "AND":
