@@ -6,9 +6,9 @@ from ..filter import Pred
 
 ident = lambda x: x
 
-lt  = lambda n: Pred(lambda x: x <  n)
-eq  = lambda n: Pred(lambda x: x == n)
-gt  = lambda n: Pred(lambda x: x >  n)
+lt  = lambda n: Pred(lambda x: x <  n, name="<" + str(n))
+eq  = lambda n: Pred(lambda x: x == n, name="==" + str(n))
+gt  = lambda n: Pred(lambda x: x >  n, name=">" + str(n))
 
 
 class Test_Pred (unittest.TestCase):
@@ -76,4 +76,10 @@ class Test_Pred (unittest.TestCase):
 
     def test_str_NOT_named (self):
         self.assertEquals(str(~Pred(ident, name="id")), "~id")
+
+    def test_str_AND_named (self):
+        self.assertTrue(str(gt(3) & lt(5)), ">3 & <5")
+
+    def test_str_OR_named (self):
+        self.assertTrue(str(gt(3) | lt(5)), ">3 | <5")
 
