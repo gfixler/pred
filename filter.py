@@ -14,6 +14,16 @@ class Pred (object):
         elif self._op == "OR":   return self._left(x) or self._right(x)
         elif self._op == "NOT":  return not self._pred(x)
 
+    def __eq__ (self, other):
+        if self._op != other._op:
+            return False
+        if self._op == "PRED":
+            return self._name == other._name
+        elif self._op == "NOT":
+            return self._pred == other._pred
+        elif self._op in ["AND", "OR"]:
+            return self._left == other._left and self._right == other._right
+
     def __and__ (self, other):
         p = Pred()
         p._op = "AND"
