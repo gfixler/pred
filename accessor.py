@@ -12,6 +12,9 @@ class Accessor (object):
     def __call__ (self, *args):
         return self._accFunc(*args)
 
+    def pred (self, p):
+        return Pred(lambda s: p(s))
+
 
 class StringAccessor (Accessor):
 

@@ -12,6 +12,10 @@ class Test_Accessor (unittest.TestCase):
     def test_acceptsAndUsesAccessFunction (self):
         self.assertEquals(Accessor(ident)("foo"), "foo")
 
+    def test_canCreatePred (self):
+        pred = Accessor(ident).pred(lambda s: len(s) == 7)
+        self.assertTrue(pred("testing"))
+
     def test_canMakeDictKeyAccessor (self):
         data = {"a": 3, "b": 42, "c": 7}
         self.assertEquals(Accessor(lambda d: d["b"])(data), 42)
