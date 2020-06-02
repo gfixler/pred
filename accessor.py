@@ -15,6 +15,9 @@ class Accessor (object):
     def pred (self, p):
         return Pred(lambda s: p(s))
 
+    def equals (self, string):
+        return Pred(lambda s: self(s) == string)
+
 
 class StringAccessor (Accessor):
 
@@ -27,9 +30,6 @@ class StringAccessor (Accessor):
                 # supposedly str can fail (https://stackoverflow.com/a/4857604/955926)
                 raise TypeError, "StringAccessor accessed non-string object"
         return result
-
-    def equals (self, string):
-        return Pred(lambda s: self(s) == string)
 
     def contains (self, string):
         return Pred(lambda s: string in self(s))

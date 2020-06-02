@@ -16,6 +16,12 @@ class Test_Accessor (unittest.TestCase):
         pred = Accessor(ident).pred(lambda s: len(s) == 7)
         self.assertTrue(pred("testing"))
 
+    def test_canCreateEqualsPred (self):
+        accr = StringAccessor(lambda d: d["key"])
+        data = {"key": "value"}
+        self.assertTrue(accr.equals("value")(data))
+        self.assertFalse(accr.equals("random")(data))
+
     def test_canMakeDictKeyAccessor (self):
         data = {"a": 3, "b": 42, "c": 7}
         self.assertEquals(Accessor(lambda d: d["b"])(data), 42)
@@ -32,10 +38,6 @@ class Test_StringAccessor (unittest.TestCase):
 
     def test_identityOnNonStringRaises (self):
         self.assertRaises(TypeError, lambda: StringAccessor(ident)(42))
-
-    def test_canCreateIsPred (self):
-        self.assertTrue(self.name.equals("Bob")(self.data))
-        self.assertFalse(self.name.equals("Alice")(self.data))
 
     def test_canCreateContainsPred (self):
         self.assertTrue(self.name.contains("o")(self.data))
