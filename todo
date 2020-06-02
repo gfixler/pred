@@ -1,0 +1,28 @@
+.match()
+
+    StringAccessors have a matches call, which creates a Pred on the full
+    match. A match call that returns a MatchAccessor could also be helpful. A
+    MatchAccessor would provide methods for the properties of a Python re match
+    object. Here's an example breakdown of how you could create, and dive, into
+    such a thing, and what you'd get as you did:
+
+    name = StringAccessor(lambda d: d["name"])
+
+    name                                    # StringAccessor
+    name.match(pat)                         # MatchAccessor
+    name.match(pat).group(0)                # StringAccessor
+    name.match(pat).group(0).equals("foo")  # Pred
+
+    Here, name is a string accessor on a dictionary, which simply pulls the
+    "name" value out of a given dict. If you called its match method with a re
+    pattern, you'd get a MatchAccessor. All of the methods and proprties on re
+    match objects would be available, like group, which would let you ask for
+    group results, here, the 0th one, which would be a string, and would yield
+    a StringAccessor, which, of course, has an equals method, which results in
+    a Pred object.
+
+    As I thought about this, however, I realized how complex a re match object
+    is. For example, if you call .group(0), you get the entire match, but if
+    you call .group(1, 2), you get back a tuple of matches 1 and 2. Do I need
+    to then create a TupleOfStringAccessor?
+
