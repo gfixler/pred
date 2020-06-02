@@ -1,7 +1,7 @@
 import unittest
 from nose.plugins.attrib import attr
 
-from ..accessor import Accessor, StringAccessor
+from ..accessor import Accessor, StringAccessor, IntAccessor
 
 
 ident = lambda x: x
@@ -52,4 +52,13 @@ class Test_StringAccessor (unittest.TestCase):
     def test_canCreateMatchesPred (self):
         self.assertTrue(self.name.matches(".*\d\d-\d\d.*")("blue_23-42_hike"))
         self.assertFalse(self.name.matches(".*\d\d-\d\d.*")("ab-cd"))
+
+
+class Test_IntAccessor (unittest.TestCase):
+
+    def test_identityOnIntsWorks (self):
+        self.assertEquals(IntAccessor(ident)(7), 7)
+
+    def test_identityOnNonIntsRaises (self):
+        self.assertRaises(TypeError, lambda: IntAccessor(ident)("foo"))
 

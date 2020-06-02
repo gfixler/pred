@@ -43,3 +43,16 @@ class StringAccessor (Accessor):
     def matches (self, pattern):
         return Pred(lambda s: re.match(pattern, s))
 
+
+class IntAccessor (Accessor):
+
+    def __call__ (self, *args):
+        result = self._accFunc(*args)
+        if type(result) != int:
+            try:
+                raise TypeError, "IntAccessor accessed non-int object: " + str(result)
+            except:
+                # supposedly str can fail (https://stackoverflow.com/a/4857604/955926)
+                raise TypeError, "IntAccessor accessed non-int object"
+        return result
+
