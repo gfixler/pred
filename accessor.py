@@ -44,28 +44,15 @@ class StringAccessor (Accessor):
         return Pred(lambda s: re.match(pattern, s))
 
 
-class IntAccessor (Accessor):
+class NumAccessor (Accessor):
 
     def __call__ (self, *args):
         result = self._accFunc(*args)
-        if type(result) != int:
+        if type(result) not in [int, float]:
             try:
-                raise TypeError, "IntAccessor accessed non-int object: " + str(result)
+                raise TypeError, "NumAccessor accessed non-num object: " + str(result)
             except:
                 # supposedly str can fail (https://stackoverflow.com/a/4857604/955926)
-                raise TypeError, "IntAccessor accessed non-int object"
-        return result
-
-
-class FloatAccessor (NumAccessor):
-
-    def __call__ (self, *args):
-        result = self._accFunc(*args)
-        if type(result) != float:
-            try:
-                raise TypeError, "FloatAccessor accessed non-float object: " + str(result)
-            except:
-                # supposedly str can fail (https://stackoverflow.com/a/4857604/955926)
-                raise TypeError, "FloatAccessor accessed non-float object"
+                raise TypeError, "NumAccessor accessed non-num object"
         return result
 
