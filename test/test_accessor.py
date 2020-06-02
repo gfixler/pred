@@ -67,3 +67,30 @@ class Test_NumAccessor (unittest.TestCase):
     def test_identityOnNonNumsRaises (self):
         self.assertRaises(TypeError, lambda: NumAccessor(ident)("foo"))
 
+    def test_ltOnInt (self):
+        p = NumAccessor(ident).lt(4)
+        self.assertTrue(p(3))
+        self.assertFalse(p(4))
+
+    def test_lteOnInt (self):
+        p = NumAccessor(ident).lte(4)
+        self.assertTrue(p(3))
+        self.assertTrue(p(4))
+        self.assertFalse(p(5))
+
+    def test_eqOnInt (self):
+        p = NumAccessor(ident).eq(4)
+        self.assertTrue(p(4))
+        self.assertFalse(p(3))
+
+    def test_gteOnInt (self):
+        p = NumAccessor(ident).gte(4)
+        self.assertFalse(p(3))
+        self.assertTrue(p(4))
+        self.assertTrue(p(5))
+
+    def test_gtOnInt (self):
+        p = NumAccessor(ident).gt(4)
+        self.assertTrue(p(5))
+        self.assertFalse(p(4))
+

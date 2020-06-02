@@ -56,3 +56,19 @@ class NumAccessor (Accessor):
                 raise TypeError, "NumAccessor accessed non-num object"
         return result
 
+
+    def lt (self, n):
+        return Pred(lambda i: i < n)
+
+    def lte (self, n):
+        return Pred(lambda i: i <= n)
+
+    def eq (self, n):
+        return Pred(lambda i: i == n)
+
+    def gte (self, n):
+        return Pred(lambda i: i >= n)
+
+    def gt (self, n):
+        return Pred(lambda i: i > n)
+
