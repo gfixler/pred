@@ -1,7 +1,7 @@
 import unittest
 from nose.plugins.attrib import attr
 
-from ..accessor import Accessor, StringAccessor, IntAccessor
+from ..accessor import Accessor, StringAccessor, IntAccessor, FloatAccessor
 
 
 ident = lambda x: x
@@ -61,4 +61,13 @@ class Test_IntAccessor (unittest.TestCase):
 
     def test_identityOnNonIntsRaises (self):
         self.assertRaises(TypeError, lambda: IntAccessor(ident)("foo"))
+
+
+class Test_FloatAccessor (unittest.TestCase):
+
+    def test_identityOnFloatsWorks (self):
+        self.assertEquals(FloatAccessor(ident)(7.0), 7.0)
+
+    def test_identityOnNonFloatsRaises (self):
+        self.assertRaises(TypeError, lambda: FloatAccessor(ident)("foo"))
 

@@ -56,3 +56,16 @@ class IntAccessor (Accessor):
                 raise TypeError, "IntAccessor accessed non-int object"
         return result
 
+
+class FloatAccessor (NumAccessor):
+
+    def __call__ (self, *args):
+        result = self._accFunc(*args)
+        if type(result) != float:
+            try:
+                raise TypeError, "FloatAccessor accessed non-float object: " + str(result)
+            except:
+                # supposedly str can fail (https://stackoverflow.com/a/4857604/955926)
+                raise TypeError, "FloatAccessor accessed non-float object"
+        return result
+
