@@ -1,0 +1,41 @@
+Tue Jun  2 13:31:29 PDT 2020
+
+ACCESSORS
+
+I've begun implementing a thought from yesterday, based on thoughts I've had
+before, by the same name: accessors. Originally, I was thinking of accessors as
+predicate combinators, like this one, which would take a predicate, a key, and
+a dict, and look up the key in the dict, then call the predicate on it:
+
+    key = lambda p: lambda k: lambda d: p(k[d])
+
+...and of course, I'd make the last bit a composable predicate:
+
+    key = lambda p: lambda k: Pred(lambda d: p(k[d]))
+
+Now I'm thinking of accessors as a bit more of an OOP construct, because I
+don't have types, and other niceties, and it's convenient to have something
+like a StringAccessor, which takes a function that should result in a string,
+when given the right input, but which also has a suite of methods that generate
+predicates. Here's an interesting sequence of thoughts about this:
+
+    getName = lambda (_, v): v["name"]      # name getter on char kv pair
+    name = StringAccessor(getName)          # access name from char kv pair
+
+    bobkv = ("bob", {"name": "Bob"})        # char kv pairs
+    jankv = ("jan", {"name": "Jan"})
+    wilkv = ("wil", {"name": "Wil"})
+    jilkv = ("jil", {"name": "Jil"})
+
+    chars = [bobkv, jankv, wilkv, jilkv]    # chars list
+    chardb = dict(charsList)                # chars dict
+
+    name(bobkv)                             # used as accessor = "Bob"
+
+    name.startswith("B")                    # predicate
+    name.startswith("B")(bobkv)             # predicate use = True
+
+    name.contains("i")                      # predicate
+    iInName = name.contains("i")            # predicates are first class
+    filter(iInName, chardb.items())         # filter, finds: [wilkv, jilkv]
+
