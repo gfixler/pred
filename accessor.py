@@ -1,7 +1,7 @@
 import re
 
 
-from .filter import Pred
+from .pred import Pred
 
 
 class Accessor (object):

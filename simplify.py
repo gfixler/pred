@@ -1,4 +1,4 @@
-from .filter import Pred
+from .pred import Pred
 
 true = Pred(lambda _: True, name="True")
 false = Pred(lambda _: False, name="False")

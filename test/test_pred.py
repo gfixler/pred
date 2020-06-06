@@ -1,7 +1,7 @@
 import unittest
 from nose.plugins.attrib import attr
 
-from ..filter import *
+from ..pred import *
 
 
 ident = lambda x: x
