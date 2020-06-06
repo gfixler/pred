@@ -1,3 +1,20 @@
+Explain
+
+    & and | are short-circuiting
+
+        under the hood, "and" and "or" on function calls short circuit
+
+        Here's a truth table
+
+        A       OP      B       RESULT
+        --------------------------
+        raise   &       -       raise
+        True    &       raise   raise
+        False   &       -       False   <- short circuited, works if B raises
+        raise   |       -       raise
+        True    |       -       False   <- short circuited, works if B raises
+        False   |       raise   raise
+
 .match()
 
     StringAccessors have a matches call, which creates a Pred on the full
