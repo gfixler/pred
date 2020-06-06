@@ -16,6 +16,18 @@ class Test_Pred (unittest.TestCase):
     def test_canCallIdentityPredicate (self):
         self.assertTrue(Pred(ident)(True))
 
+    def test_eq_actuallyEqual (self):
+        self.assertEquals(lt(5), lt(5))
+
+    def test_eq_AND (self):
+        self.assertEquals(lt(5) & gt(3), lt(5) & gt(3))
+
+    def test_eq_OR (self):
+        self.assertEquals(lt(5) | gt(3), lt(5) | gt(3))
+
+    def test_eq_NOT (self):
+        self.assertEquals(~lt(5), ~lt(5))
+
     def test_canANDPredicates (self):
         self.assertEquals(map(gt(3) & lt(5), [3, 4, 5]), [False, True, False])
 
@@ -34,6 +46,30 @@ class Test_Pred (unittest.TestCase):
         #             0      1     2      3     4      5      6     7      8     9
         expected = [False, True, False, True, False, False, True, False, True, False]
         self.assertEquals(map(p, range(10)), expected)
+
+    def test_str_PRED_unnamed (self):
+        self.assertTrue(str(Pred(ident)).startswith("<function <lambda> at"))
+
+    def test_str_PRED_named (self):
+        self.assertEquals(str(Pred(ident, name="id")), "id")
+
+    def test_str_NOT_unnamed (self):
+        self.assertTrue(str(~Pred(ident)).startswith("~<function <lambda> at"))
+
+    def test_str_NOT_named (self):
+        self.assertEquals(str(~Pred(ident, name="id")), "~id")
+
+    def test_str_AND_named (self):
+        self.assertTrue(str(gt(3) & lt(5)), ">3 & <5")
+
+    def test_str_OR_named (self):
+        self.assertTrue(str(gt(3) | lt(5)), ">3 | <5")
+
+    def test_str_AndOrNot_unparenthesizedOr (self):
+        self.assertEquals(str(gt(3) | lt(5) & ~eq(7)), "(>3) | (<5) & ~(==7)")
+
+    def test_str_AndOrNot_parenthesizedOr (self):
+        self.assertEquals(str((gt(3) | lt(5)) & ~eq(7)), "((>3) | (<5)) & ~(==7)")
 
     def test_ast_PRED (self):
         (op, erand) = Pred(ident).ast()
@@ -64,40 +100,4 @@ class Test_Pred (unittest.TestCase):
         (nop, nerands) = erand
         self.assertEquals(nop, "PRED")
         self.assertTrue(callable(nerands))
-
-    def test_str_PRED_unnamed (self):
-        self.assertTrue(str(Pred(ident)).startswith("<function <lambda> at"))
-
-    def test_str_PRED_named (self):
-        self.assertEquals(str(Pred(ident, name="id")), "id")
-
-    def test_str_NOT_unnamed (self):
-        self.assertTrue(str(~Pred(ident)).startswith("~<function <lambda> at"))
-
-    def test_str_NOT_named (self):
-        self.assertEquals(str(~Pred(ident, name="id")), "~id")
-
-    def test_str_AND_named (self):
-        self.assertTrue(str(gt(3) & lt(5)), ">3 & <5")
-
-    def test_str_OR_named (self):
-        self.assertTrue(str(gt(3) | lt(5)), ">3 | <5")
-
-    def test_str_AndOrNot_unparenthesizedOr (self):
-        self.assertEquals(str(gt(3) | lt(5) & ~eq(7)), "(>3) | (<5) & ~(==7)")
-
-    def test_str_AndOrNot_parenthesizedOr (self):
-        self.assertEquals(str((gt(3) | lt(5)) & ~eq(7)), "((>3) | (<5)) & ~(==7)")
-
-    def test_eq_actuallyEqual (self):
-        self.assertEquals(lt(5), lt(5))
-
-    def test_eq_AND (self):
-        self.assertEquals(lt(5) & gt(3), lt(5) & gt(3))
-
-    def test_eq_OR (self):
-        self.assertEquals(lt(5) | gt(3), lt(5) | gt(3))
-
-    def test_eq_NOT (self):
-        self.assertEquals(~lt(5), ~lt(5))
 

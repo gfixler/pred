@@ -44,16 +44,6 @@ class Pred (object):
         p._pred = self
         return p
 
-    def ast (self):
-        if self._op == "PRED":
-            return ("PRED", self._pred)
-        elif self._op == "AND":
-            return ("AND", (self._left.ast(), self._right.ast()))
-        elif self._op == "OR":
-            return ("OR", (self._left.ast(), self._right.ast()))
-        elif self._op == "NOT":
-            return ("NOT", self._pred.ast())
-
     def __str__ (self):
         if self._op == "PRED":
             return self._name
@@ -66,4 +56,14 @@ class Pred (object):
             return leftfn(self._left) + " & " + rightfn(self._right)
         elif self._op == "OR":
             return str(self._left) + " | " + str(self._right)
+
+    def ast (self):
+        if self._op == "PRED":
+            return ("PRED", self._pred)
+        elif self._op == "AND":
+            return ("AND", (self._left.ast(), self._right.ast()))
+        elif self._op == "OR":
+            return ("OR", (self._left.ast(), self._right.ast()))
+        elif self._op == "NOT":
+            return ("NOT", self._pred.ast())
 
