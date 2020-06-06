@@ -59,7 +59,7 @@ class Pred (object):
 
     def ast (self):
         if self._op == "PRED":
-            return ("PRED", self._pred)
+            return ("PRED", self)
         elif self._op == "AND":
             return ("AND", (self._left.ast(), self._right.ast()))
         elif self._op == "OR":

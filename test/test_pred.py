@@ -71,6 +71,11 @@ class Test_Pred (unittest.TestCase):
     def test_str_AndOrNot_parenthesizedOr (self):
         self.assertEquals(str((gt(3) | lt(5)) & ~eq(7)), "((>3) | (<5)) & ~(==7)")
 
+    def test_ast_returnsOpPredPair (self):
+        (op, ast) = gt(3).ast()
+        self.assertEquals(op, "PRED")
+        self.assertEquals(type(ast), Pred)
+
     def test_ast_PRED (self):
         (op, erand) = Pred(ident).ast()
         self.assertEquals(op, "PRED")
