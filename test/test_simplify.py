@@ -11,38 +11,38 @@ eq  = lambda n: Pred(lambda x: x == n, name="(==" + str(n) + ")")
 gt  = lambda n: Pred(lambda x: x >  n, name="(>" + str(n) + ")")
 
 
-class Test_Pred (unittest.TestCase):
+class Test_simplify (unittest.TestCase):
 
-    def test_simplify_simplestForm (self):
+    def test_simplestForm (self):
         self.assertEquals(simplify(lt(5)), lt(5))
 
-    def test_simplify_notNotXEqualsX (self):
+    def test_notNotXEqualsX (self):
         self.assertEquals(simplify(~~lt(5)), lt(5))
 
-    def test_simplify_notNotNotXEqualsX (self):
+    def test_notNotNotXEqualsX (self):
         self.assertEquals(simplify(~~~lt(5)), ~lt(5))
 
-    def test_simplify_notNotNotNotXEqualsX (self):
+    def test_notNotNotNotXEqualsX (self):
         self.assertEquals(simplify(~~~~lt(5)), lt(5))
 
-    def test_simplify_xAndNotX (self):
+    def test_xAndNotX (self):
         self.assertEquals(simplify(lt(5) & ~lt(5)), false)
 
-    def test_simplify_notXAndX (self):
+    def test_notXAndX (self):
         self.assertEquals(simplify(~lt(5) & lt(5)), false)
 
-    def test_simplify_xOrNotX (self):
+    def test_xOrNotX (self):
         self.assertEquals(simplify(lt(5) | ~lt(5)), true)
 
-    def test_simplify_notXOrX (self):
+    def test_notXOrX (self):
         self.assertEquals(simplify(~lt(5) | lt(5)), true)
 
-    def test_simplify_xAndX (self):
+    def test_xAndX (self):
         self.assertEquals(simplify(lt(5) & lt(5)), lt(5))
 
-    def test_simplify_xOrX (self):
+    def test_xOrX (self):
         self.assertEquals(simplify(lt(5) | lt(5)), lt(5))
 
-    def test_simplify_xAndNotNotX (self):
+    def test_xAndNotNotX (self):
         self.assertEquals(simplify(lt(5) & ~~lt(5)), lt(5))
 
