@@ -16,6 +16,10 @@ class Test_Accessor (unittest.TestCase):
         pred = Accessor(ident).pred(lambda s: len(s) == 7)
         self.assertTrue(pred("testing"))
 
+    def test_canNamePreds (self):
+        pred = Accessor(ident).pred(lambda x: lambda _: x, name="id")
+        self.assertEquals(str(pred), "id")
+
     def test_canCreateEqualsPred (self):
         accr = StringAccessor(lambda d: d["key"])
         data = {"key": "value"}
