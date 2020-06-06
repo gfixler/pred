@@ -6,9 +6,9 @@ from ..simplify import *
 
 ident = lambda x: x
 
-lt  = lambda n: Pred(lambda x: x <  n, name="(<" + str(n) + ")")
-eq  = lambda n: Pred(lambda x: x == n, name="(==" + str(n) + ")")
-gt  = lambda n: Pred(lambda x: x >  n, name="(>" + str(n) + ")")
+lt  = lambda n: Pred(lambda x: x <  n, name="lt(" + str(n) + ")")
+eq  = lambda n: Pred(lambda x: x == n, name="eq(" + str(n) + ")")
+gt  = lambda n: Pred(lambda x: x >  n, name="gt(" + str(n) + ")")
 
 
 class Test_defaultPreds (unittest.TestCase):
