@@ -11,6 +11,27 @@ eq  = lambda n: Pred(lambda x: x == n, name="(==" + str(n) + ")")
 gt  = lambda n: Pred(lambda x: x >  n, name="(>" + str(n) + ")")
 
 
+class Test_defaultPreds (unittest.TestCase):
+
+    def test_trueIfGivenTrue (self):
+        self.assertEquals(true(True), True)
+
+    def test_trueIfGivenFalse (self):
+        self.assertEquals(true(False), True)
+
+    def test_trueIsNamedCorrectly (self):
+        self.assertEquals(str(true), "true")
+
+    def test_falseIfGivenTrue (self):
+        self.assertEquals(false(True), False)
+
+    def test_falseIfGivenFalse (self):
+        self.assertEquals(false(False), False)
+
+    def test_falseIsNamedCorrectly (self):
+        self.assertEquals(str(false), "false")
+
+
 class Test_simplify (unittest.TestCase):
 
     def test_simplestForm (self):

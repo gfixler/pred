@@ -1,7 +1,8 @@
 from .pred import Pred
 
-true = Pred(lambda _: True, name="True")
-false = Pred(lambda _: False, name="False")
+
+true = Pred(lambda _: True, name="true")
+false = Pred(lambda _: False, name="false")
 
 def simplify_notNot (pred):
     if pred._op == "NOT" and pred._pred._op == "NOT":
