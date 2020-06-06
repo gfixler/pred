@@ -22,6 +22,10 @@ class Test_Accessor (unittest.TestCase):
         self.assertTrue(accr.equals("value")(data))
         self.assertFalse(accr.equals("random")(data))
 
+    def test_equalsPredIsNamedCorrectly (self):
+        accr = StringAccessor(lambda d: d["key"])
+        self.assertEquals(str(accr.equals("key")), "(== \"key\")")
+
     def test_canMakeDictKeyAccessor (self):
         data = {"a": 3, "b": 42, "c": 7}
         self.assertEquals(Accessor(lambda d: d["b"])(data), 42)
@@ -43,17 +47,29 @@ class Test_StringAccessor (unittest.TestCase):
         self.assertTrue(self.name.contains("o")(self.data))
         self.assertFalse(self.name.contains("e")(self.data))
 
+    def test_containsPredIsNamedCorrectly (self):
+        self.assertEquals(str(self.name.contains("o")), "contains(\"o\")")
+
     def test_canCreateStartswithPred (self):
         self.assertTrue(self.name.startswith("B")(self.data))
         self.assertFalse(self.name.startswith("A")(self.data))
+
+    def test_startswithPredIsNamedCorrectly (self):
+        self.assertEquals(str(self.name.startswith("B")), "startswith(\"B\")")
 
     def test_canCreateEndswithPred (self):
         self.assertTrue(self.name.endswith("b")(self.data))
         self.assertFalse(self.name.endswith("e")(self.data))
 
+    def test_endswithPredIsNamedCorrectly (self):
+        self.assertEquals(str(self.name.endswith("b")), "endswith(\"b\")")
+
     def test_canCreateMatchesPred (self):
         self.assertTrue(self.name.matches(".*\d\d-\d\d.*")("blue_23-42_hike"))
         self.assertFalse(self.name.matches(".*\d\d-\d\d.*")("ab-cd"))
+
+    def test_matchesPredIsNamedCorrectly (self):
+        self.assertEquals(str(self.name.matches(".*\d\d-\d\d.*")), "matches(\".*\d\d-\d\d.*\")")
 
 
 class Test_NumAccessor (unittest.TestCase):
@@ -72,16 +88,28 @@ class Test_NumAccessor (unittest.TestCase):
         self.assertTrue(p(3))
         self.assertFalse(p(4))
 
+    def test_ltIsNamedCorrectly (self):
+        p = NumAccessor(ident).lt(4)
+        self.assertEquals(str(p), "(< 4)")
+
     def test_lteOnInt (self):
         p = NumAccessor(ident).lte(4)
         self.assertTrue(p(3))
         self.assertTrue(p(4))
         self.assertFalse(p(5))
 
+    def test_lteIsNamedCorrectly (self):
+        p = NumAccessor(ident).lte(4)
+        self.assertEquals(str(p), "(<= 4)")
+
     def test_eqOnInt (self):
         p = NumAccessor(ident).eq(4)
         self.assertTrue(p(4))
         self.assertFalse(p(3))
+
+    def test_eqIsNamedCorrectly (self):
+        p = NumAccessor(ident).eq(4)
+        self.assertEquals(str(p), "(== 4)")
 
     def test_gteOnInt (self):
         p = NumAccessor(ident).gte(4)
@@ -89,8 +117,16 @@ class Test_NumAccessor (unittest.TestCase):
         self.assertTrue(p(4))
         self.assertTrue(p(5))
 
+    def test_gteIsNamedCorrectly (self):
+        p = NumAccessor(ident).gte(4)
+        self.assertEquals(str(p), "(>= 4)")
+
     def test_gtOnInt (self):
         p = NumAccessor(ident).gt(4)
         self.assertTrue(p(5))
         self.assertFalse(p(4))
+
+    def test_gtIsNamedCorrectly (self):
+        p = NumAccessor(ident).gt(4)
+        self.assertEquals(str(p), "(> 4)")
 

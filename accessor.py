@@ -16,7 +16,7 @@ class Accessor (object):
         return Pred(lambda s: p(s))
 
     def equals (self, string):
-        return Pred(lambda s: self(s) == string)
+        return Pred(lambda s: self(s) == string, name="(== \"" + string + "\")")
 
 
 class StringAccessor (Accessor):
@@ -32,16 +32,16 @@ class StringAccessor (Accessor):
         return result
 
     def contains (self, string):
-        return Pred(lambda s: string in self(s))
+        return Pred(lambda s: string in self(s), name="contains(\"" + string + "\")")
 
     def startswith (self, string):
-        return Pred(lambda s: self(s).startswith(string))
+        return Pred(lambda s: self(s).startswith(string), name="startswith(\"" + string + "\")")
 
     def endswith (self, string):
-        return Pred(lambda s: self(s).endswith(string))
+        return Pred(lambda s: self(s).endswith(string), name="endswith(\"" + string + "\")")
 
     def matches (self, pattern):
-        return Pred(lambda s: re.match(pattern, s))
+        return Pred(lambda s: re.match(pattern, s), name="matches(\"" + pattern + "\")")
 
 
 class NumAccessor (Accessor):
@@ -58,17 +58,17 @@ class NumAccessor (Accessor):
 
 
     def lt (self, n):
-        return Pred(lambda i: i < n)
+        return Pred(lambda i: i < n, name="(< " + str(n) + ")")
 
     def lte (self, n):
-        return Pred(lambda i: i <= n)
+        return Pred(lambda i: i <= n, name="(<= " + str(n) + ")")
 
     def eq (self, n):
-        return Pred(lambda i: i == n)
+        return Pred(lambda i: i == n, name="(== " + str(n) + ")")
 
     def gte (self, n):
-        return Pred(lambda i: i >= n)
+        return Pred(lambda i: i >= n, name="(>= " + str(n) + ")")
 
     def gt (self, n):
-        return Pred(lambda i: i > n)
+        return Pred(lambda i: i > n, name="(> " + str(n) + ")")
 
