@@ -24,6 +24,9 @@ class Pred (object):
         elif self._op in ["AND", "OR"]:
             return self._left == other._left and self._right == other._right
 
+    def __ne__ (self, other):
+        return not (self == other)
+
     def __and__ (self, other):
         p = Pred()
         p._op = "AND"
@@ -71,43 +74,76 @@ class Pred (object):
 true = Pred(lambda _: True, name="True")
 false = Pred(lambda _: False, name="False")
 
-def simplify_notNot (pred):
-    if pred._op == "NOT" and pred._pred._op == "NOT":
-        return (simplify(pred._pred._pred), True)
-    return (pred, False)
-
-def simplify_xAndNotX (pred):
+def predFlip (pred):
     if pred._op == "AND":
-        if pred._left._op == "NOT" and simplify(pred._right) == simplify(pred._left._pred):
-            return (false, True)
-        elif pred._right._op == "NOT" and simplify(pred._left) == simplify(pred._right._pred):
-            return (false, True)
-    return (pred, False)
-
-def simplify_xOrNotX (pred):
+        return pred._right & pred._left
     if pred._op == "OR":
-        if pred._left._op == "NOT" and simplify(pred._right) == simplify(pred._left._pred):
-            return (true, True)
-        elif pred._right._op == "NOT" and simplify(pred._left) == simplify(pred._right._pred):
-            return (true, True)
-    return (pred, False)
+        return pred._right | pred._left
+    return pred
 
-def simplify_xAndOrX (pred):
-    if pred._op in ["AND", "OR"]:
-        simpleLeft = simplify(pred._left)
-        if simpleLeft == simplify(pred._right):
-            return (simpleLeft, True)
-    return (pred, False)
+def simplify_NOT (pred):
+    if pred._pred._op == "NOT":
+        return simplify(pred._pred._pred)
+    return pred
+
+def simplify_AND (pred):
+    pred._left = simplify(pred._left)
+    pred._right = simplify(pred._right)
+    if pred._left._op == "NOT" and pred._left._pred == pred._right:
+        return false
+    elif pred._left == pred._right:
+        return pred._left
+    elif pred._left == true:
+        return pred._right
+    elif pred._left == false:
+        return false
+    elif pred._right._op == "OR" and (pred._left == pred._right._left or pred._left == pred._right._right):
+        return pred._left
+    return pred
+
+def simplify_OR (pred):
+    pred._left = simplify(pred._left)
+    pred._right = simplify(pred._right)
+    if pred._left._op == "NOT" and pred._left._pred == pred._right:
+        return true
+    elif pred._right == pred._left:
+        return pred._right
+    elif pred._left == false:
+        return pred._right
+    elif pred._left == true:
+        return true
+    elif pred._left._op == "AND" and pred._right._op == "AND":
+        return simplify_distribute(pred._left, pred._right)
+    elif pred._right._op == "AND" and (pred._left == pred._right._left or pred._left == pred._right._right):
+        return pred._left
+    return pred
+
+def simplify_distribute (left, right):
+    if left._left == right._left:
+        return simplify(left._left & (left._right | right._right))
+    if left._left == right._right:
+        return simplify(left._left & (left._right | right._left))
+    if left._right == right._left:
+        return simplify(left._right & (left._left | right._right))
+    if left._right == right._right:
+        return simplify(left._right & (left._left | right._left))
+    return left | right
+
+def simplify_commutative (pred, simplifier):
+    result = simplifier(pred)
+    if result != pred:
+        return result
+    result = simplifier(predFlip(pred))
+    if result != predFlip(pred):
+        return result
+    return pred
 
 def simplify (pred):
-    simplifiers = [ simplify_notNot
-                  , simplify_xAndNotX
-                  , simplify_xOrNotX
-                  , simplify_xAndOrX
-                  ]
-    for simplifier in simplifiers:
-        (result, status) = simplifier(pred)
-        if status:
-            return result
+    if pred._op == "AND":
+        return simplify_commutative(pred, simplify_AND)
+    elif pred._op == "OR":
+        return simplify_commutative(pred, simplify_OR)
+    elif pred._op == "NOT":
+        return simplify_NOT(pred)
     return pred
 

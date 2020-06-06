@@ -134,3 +134,48 @@ class Test_Pred (unittest.TestCase):
     def test_simplify_xAndNotNotX (self):
         self.assertEquals(simplify(lt(5) & ~~lt(5)), lt(5))
 
+    def test_simplify_xAndTrue (self):
+        self.assertEquals(simplify(lt(5) & true), lt(5))
+        self.assertEquals(simplify(true & lt(5)), lt(5))
+
+    def test_simplify_xAndFalse (self):
+        self.assertEquals(simplify(lt(5) & false), false)
+        self.assertEquals(simplify(false & lt(5)), false)
+
+    def test_simplify_xOrFalse (self):
+        self.assertEquals(simplify(lt(5) | false), lt(5))
+        self.assertEquals(simplify(false | lt(5)), lt(5))
+
+    def test_simplify_xOrTrue (self):
+        self.assertEquals(simplify(lt(5) | true), true)
+        self.assertEquals(simplify(true | lt(5)), true)
+
+    def test_simplify_aAndBOrNotB (self):
+        self.assertEquals(simplify(lt(5) & (lt(3) | ~lt(3))), lt(5))
+
+    def test_simplify_aOrNotAAndB (self):
+        self.assertEquals(simplify((lt(5) | ~lt(5)) & lt(3)), lt(3))
+
+    def test_simplify_aAndBOrAAndC (self):
+        self.assertEquals(simplify((lt(5) & gt(3)) | (lt(5) & gt(2))), lt(5) & (gt(3) | gt(2)))
+
+    def test_simplify_bAndAOrAAndC (self):
+        self.assertEquals(simplify((gt(3) & lt(5)) | (lt(5) & gt(2))), lt(5) & (gt(3) | gt(2)))
+
+    def test_simplify_bAndAOrCAndA (self):
+        self.assertEquals(simplify((gt(3) & lt(5)) | (gt(2) & lt(5))), lt(5) & (gt(3) | gt(2)))
+
+    def test_simplify_aAndBOrCAndA (self):
+        self.assertEquals(simplify((lt(5) & gt(3)) | (gt(2) & lt(5))), lt(5) & (gt(3) | gt(2)))
+
+    def test_simplify_distributiveFollowedByXAndNotXFollowedByXAndTrue (self):
+        self.assertEquals(simplify((lt(5) & gt(3)) | (lt(5) & ~gt(3))), lt(5))
+
+    def test_simplify_aAndAOrB (self):
+        self.assertEquals(simplify(lt(5) & (lt(5) | gt(2))), lt(5))
+        self.assertEquals(simplify((lt(5) | gt(2)) & lt(5)), lt(5))
+
+    def test_simplify_aOrAAndB (self):
+        self.assertEquals(simplify(lt(5) | (lt(5) & gt(2))), lt(5))
+        self.assertEquals(simplify((lt(5) & gt(2) | lt(5))), lt(5))
+
