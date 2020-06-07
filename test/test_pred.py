@@ -106,3 +106,35 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(nop, "PRED")
         self.assertTrue(callable(nerands))
 
+    def test_pformat_onePred (self):
+        p = lt(3)
+        self.assertEquals(p.pformat(), "lt(3)")
+
+    def test_pformat_onePred_customIndent (self):
+        p = lt(3)
+        self.assertEquals(p.pformat(indent=5), "lt(3)")
+
+    def test_pformat_andOfTwoPreds (self):
+        p = lt(7) & gt(3)
+        self.assertEquals(p.pformat(), "AND\n  lt(7)\n  gt(3)")
+
+    def test_pformat_andOfTwoPreds_customIndent (self):
+        p = lt(7) & gt(3)
+        self.assertEquals(p.pformat(indent=5), "AND\n     lt(7)\n     gt(3)")
+
+    def test_pformat_orOfTwoPreds (self):
+        p = lt(5) | eq(9)
+        self.assertEquals(p.pformat(), "OR\n  lt(5)\n  eq(9)")
+
+    def test_pformat_orOfTwoPreds_customIndent (self):
+        p = lt(5) | eq(9)
+        self.assertEquals(p.pformat(indent=3), "OR\n   lt(5)\n   eq(9)")
+
+    def test_pformat_notPred (self):
+        p = ~eq(4)
+        self.assertEquals(p.pformat(), "NOT\n  eq(4)")
+
+    def test_pformat_notPred_customIndent (self):
+        p = ~eq(4)
+        self.assertEquals(p.pformat(indent=7), "NOT\n       eq(4)")
+

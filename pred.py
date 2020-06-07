@@ -67,3 +67,22 @@ class Pred (object):
         elif self._op == "NOT":
             return ("NOT", self._pred.ast())
 
+    def pformat (self, indent=2, indLev=0, *args, **kwargs):
+        ind = " " * indent * indLev
+        if self._op == "PRED":
+            return ind + str(self)
+        if self._op == "AND":
+            left = self._left.pformat(indent=indent, indLev=indLev+1)
+            right = self._right.pformat(indent=indent, indLev=indLev+1)
+            return "\n".join([ind + "AND", left, right])
+        if self._op == "OR":
+            left = self._left.pformat(indent=indent, indLev=indLev+1)
+            right = self._right.pformat(indent=indent, indLev=indLev+1)
+            return "\n".join([ind + "OR", left, right])
+        if self._op == "NOT":
+            p = self._pred.pformat(indent=indent, indLev=indLev+1)
+            return '\n'.join([ind + "NOT", p])
+
+    def pprint (self, *args, **kwargs):
+        print self.pformat(*args, **kwargs)
+
