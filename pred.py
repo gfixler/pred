@@ -29,6 +29,7 @@ class Pred (object):
         p._op = "AND"
         p._left = self
         p._right = other
+        p._name = str(p)
         return p
 
     def __or__ (self, other):
@@ -36,12 +37,14 @@ class Pred (object):
         p._op = "OR"
         p._left = self
         p._right = other
+        p._name = str(p)
         return p
 
     def __invert__ (self):
         p = Pred()
         p._op = "NOT"
         p._pred = self
+        p._name = str(p)
         return p
 
     def __str__ (self):

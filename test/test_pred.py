@@ -63,13 +63,22 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(str(gt(3) & lt(5)), "gt(3) & lt(5)")
 
     def test_str_OR_named (self):
-        self.assertEquals(str(gt(3) | lt(5)), "gt(3) | lt(5)")
+        self.assertEquals(str(lt(3) | gt(5)), "lt(3) | gt(5)")
 
     def test_str_AndOrNot_unparenthesizedOr (self):
         self.assertEquals(str(gt(3) | lt(5) & ~eq(7)), "gt(3) | lt(5) & ~eq(7)")
 
     def test_str_AndOrNot_parenthesizedOr (self):
         self.assertEquals(str((gt(3) | lt(5)) & ~eq(7)), "(gt(3) | lt(5)) & ~eq(7)")
+
+    def test_NOT_namedNameStoredInNameProperty (self):
+        self.assertEquals((~Pred(ident, name="id"))._name, "~id")
+
+    def test_AND_namedNameStoredInNameProperty (self):
+        self.assertEquals((gt(3) & lt(5))._name, "gt(3) & lt(5)")
+
+    def test_OR_namedNameStoredInNameProperty (self):
+        self.assertEquals((lt(3) | gt(5))._name, "lt(3) | gt(5)")
 
     def test_ast_returnsOpPredPair (self):
         (op, ast) = gt(3).ast()
