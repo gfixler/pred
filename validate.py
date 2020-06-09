@@ -15,7 +15,12 @@ class Validator (object):
             result["status"] = "PASSED"
         else:
             if self._fix:
-                self._fix(x)
+                try:
+                    self._fix(x)
+                except Exception as e:
+                    result["status"] = "FIXRAISED"
+                    result["error"] = e
+                    return result
                 if self._pred(x):
                     result["status"] = "FIXED"
                 else:

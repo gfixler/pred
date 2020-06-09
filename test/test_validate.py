@@ -52,3 +52,21 @@ class Test_Validator (unittest.TestCase):
         v = Validator(name, desc, vdtr, fixr)
         self.assertEquals(v(3), {"name": name, "descrip": desc, "status": "FIXED"})
 
+    def test_handlesFixThatRaises (self):
+        """
+        If the fix raises, it's caught, and the error is returned under the
+        "error" key. The Exception instance returned will have (among other
+        things), a useful "message" property.
+        """
+        def fixThatRaises (_):
+            raise RuntimeError, "Fix blew up the world."
+        name = "exploder"
+        desc = "The fix raises."
+        vdtr = const(False)
+        fixr = fixThatRaises
+        v = Validator(name, desc, vdtr, fixr)
+        result = v(42)
+        self.assertEquals(name, result["name"])
+        self.assertEquals(desc, result["descrip"])
+        self.assertEquals("FIXRAISED", result["status"])
+
