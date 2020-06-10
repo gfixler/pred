@@ -69,8 +69,8 @@ class Test_StringAccessor (unittest.TestCase):
         self.assertEquals(str(self.name.endswith("b")), "endswith(\"b\")")
 
     def test_canCreateMatchesPred (self):
-        self.assertTrue(self.name.matches(".*\d\d-\d\d.*")("blue_23-42_hike"))
-        self.assertFalse(self.name.matches(".*\d\d-\d\d.*")("ab-cd"))
+        self.assertTrue(self.name.matches(".*\d\d-\d\d.*")({"name": "blue_23-42_hike"}))
+        self.assertFalse(self.name.matches(".*\d\d-\d\d.*")({"name": "ab-cd"}))
 
     def test_matchesPredIsNamedCorrectly (self):
         self.assertEquals(str(self.name.matches(".*\d\d-\d\d.*")), "matches(\".*\d\d-\d\d.*\")")

@@ -41,7 +41,7 @@ class StringAccessor (Accessor):
         return Pred(lambda s: self(s).endswith(string), name="endswith(\"" + string + "\")")
 
     def matches (self, pattern):
-        return Pred(lambda s: re.match(pattern, s), name="matches(\"" + pattern + "\")")
+        return Pred(lambda s: re.match(pattern, self(s)), name="matches(\"" + pattern + "\")")
 
 
 class NumAccessor (Accessor):
@@ -58,17 +58,17 @@ class NumAccessor (Accessor):
 
 
     def lt (self, n):
-        return Pred(lambda i: i < n, name="(< " + str(n) + ")")
+        return Pred(lambda i: self(i) < n, name="(< " + str(n) + ")")
 
     def lte (self, n):
-        return Pred(lambda i: i <= n, name="(<= " + str(n) + ")")
+        return Pred(lambda i: self(i) <= n, name="(<= " + str(n) + ")")
 
     def eq (self, n):
-        return Pred(lambda i: i == n, name="(== " + str(n) + ")")
+        return Pred(lambda i: self(i) == n, name="(== " + str(n) + ")")
 
     def gte (self, n):
-        return Pred(lambda i: i >= n, name="(>= " + str(n) + ")")
+        return Pred(lambda i: self(i) >= n, name="(>= " + str(n) + ")")
 
     def gt (self, n):
-        return Pred(lambda i: i > n, name="(> " + str(n) + ")")
+        return Pred(lambda i: self(i) > n, name="(> " + str(n) + ")")
 
