@@ -15,8 +15,8 @@ class Accessor (object):
     def pred (self, p, *args, **kwargs):
         return Pred(lambda s: p(s), *args, **kwargs)
 
-    def equals (self, string):
-        return Pred(lambda s: self(s) == string, name="(== \"" + string + "\")")
+    def equals (self, val):
+        return Pred(lambda s: self(s) == val, name="(== " + str(val) + ")")
 
 
 class StringAccessor (Accessor):

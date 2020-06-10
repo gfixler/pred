@@ -28,7 +28,7 @@ class Test_Accessor (unittest.TestCase):
 
     def test_equalsPredIsNamedCorrectly (self):
         accr = StringAccessor(lambda d: d["key"])
-        self.assertEquals(str(accr.equals("key")), "(== \"key\")")
+        self.assertEquals(str(accr.equals("\"key\"")), "(== \"key\")")
 
     def test_canMakeDictKeyAccessor (self):
         data = {"a": 3, "b": 42, "c": 7}
