@@ -94,7 +94,7 @@ class Test_NumAccessor (unittest.TestCase):
 
     def test_ltIsNamedCorrectly (self):
         p = NumAccessor(ident).lt(4)
-        self.assertEquals(str(p), "(< 4)")
+        self.assertEquals(str(p), "lt(4)")
 
     def test_lteOnInt (self):
         p = NumAccessor(ident).lte(4)
@@ -104,7 +104,7 @@ class Test_NumAccessor (unittest.TestCase):
 
     def test_lteIsNamedCorrectly (self):
         p = NumAccessor(ident).lte(4)
-        self.assertEquals(str(p), "(<= 4)")
+        self.assertEquals(str(p), "lte(4)")
 
     def test_eqOnInt (self):
         p = NumAccessor(ident).eq(4)
@@ -113,7 +113,7 @@ class Test_NumAccessor (unittest.TestCase):
 
     def test_eqIsNamedCorrectly (self):
         p = NumAccessor(ident).eq(4)
-        self.assertEquals(str(p), "(== 4)")
+        self.assertEquals(str(p), "eq(4)")
 
     def test_gteOnInt (self):
         p = NumAccessor(ident).gte(4)
@@ -123,7 +123,7 @@ class Test_NumAccessor (unittest.TestCase):
 
     def test_gteIsNamedCorrectly (self):
         p = NumAccessor(ident).gte(4)
-        self.assertEquals(str(p), "(>= 4)")
+        self.assertEquals(str(p), "gte(4)")
 
     def test_gtOnInt (self):
         p = NumAccessor(ident).gt(4)
@@ -132,5 +132,5 @@ class Test_NumAccessor (unittest.TestCase):
 
     def test_gtIsNamedCorrectly (self):
         p = NumAccessor(ident).gt(4)
-        self.assertEquals(str(p), "(> 4)")
+        self.assertEquals(str(p), "gt(4)")
 

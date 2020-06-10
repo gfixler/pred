@@ -58,17 +58,17 @@ class NumAccessor (Accessor):
 
 
     def lt (self, n):
-        return Pred(lambda i: self(i) < n, name="(< " + str(n) + ")")
+        return Pred(lambda i: self(i) < n, name="lt(" + str(n) + ")")
 
     def lte (self, n):
-        return Pred(lambda i: self(i) <= n, name="(<= " + str(n) + ")")
+        return Pred(lambda i: self(i) <= n, name="lte(" + str(n) + ")")
 
     def eq (self, n):
-        return Pred(lambda i: self(i) == n, name="(== " + str(n) + ")")
+        return Pred(lambda i: self(i) == n, name="eq(" + str(n) + ")")
 
     def gte (self, n):
-        return Pred(lambda i: self(i) >= n, name="(>= " + str(n) + ")")
+        return Pred(lambda i: self(i) >= n, name="gte(" + str(n) + ")")
 
     def gt (self, n):
-        return Pred(lambda i: self(i) > n, name="(> " + str(n) + ")")
+        return Pred(lambda i: self(i) > n, name="gt(" + str(n) + ")")
 
