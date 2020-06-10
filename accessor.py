@@ -23,7 +23,7 @@ class StringAccessor (Accessor):
 
     def __call__ (self, *args):
         result = self._accFunc(*args)
-        if type(result) != str:
+        if type(result) not in [str, unicode]:
             try:
                 raise TypeError, "StringAccessor accessed non-string object: " + str(result)
             except:
