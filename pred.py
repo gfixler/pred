@@ -11,6 +11,7 @@ class Pred (object):
     def __call__ (self, x):
         if   self._op == "PRED": return self._pred(x)
         elif self._op == "AND":  return self._left(x) and self._right(x)
+        elif self._op == "SEQ":  return self._left(x) and self._right(x)
         elif self._op == "OR":   return self._left(x) or self._right(x)
         elif self._op == "NOT":  return not self._pred(x)
 
@@ -27,6 +28,14 @@ class Pred (object):
     def __and__ (self, other):
         p = Pred()
         p._op = "AND"
+        p._left = self
+        p._right = other
+        p._name = str(p)
+        return p
+
+    def __rshift__ (self, other):
+        p = Pred()
+        p._op = "SEQ"
         p._left = self
         p._right = other
         p._name = str(p)
@@ -51,12 +60,16 @@ class Pred (object):
         if self._op == "PRED":
             return self._name
         elif self._op == "NOT":
-            fn = inParens if self._pred._op in ["AND", "OR"] else str
+            fn = inParens if self._pred._op in ["AND", "SEQ", "OR"] else str
             return "~" + fn(self._pred)
         elif self._op == "AND":
             leftfn = inParens if self._left._op == "OR" else str
             rightfn = inParens if self._right._op == "OR" else str
             return leftfn(self._left) + " & " + rightfn(self._right)
+        elif self._op == "SEQ":
+            leftfn = inParens if self._left._op == "OR" else str
+            rightfn = inParens if self._right._op == "OR" else str
+            return leftfn(self._left) + " >> " + rightfn(self._right)
         elif self._op == "OR":
             return str(self._left) + " | " + str(self._right)
 
@@ -65,6 +78,8 @@ class Pred (object):
             return ("PRED", self)
         elif self._op == "AND":
             return ("AND", (self._left.ast(), self._right.ast()))
+        elif self._op == "SEQ":
+            return ("SEQ", (self._left.ast(), self._right.ast()))
         elif self._op == "OR":
             return ("OR", (self._left.ast(), self._right.ast()))
         elif self._op == "NOT":
@@ -78,6 +93,10 @@ class Pred (object):
             left = self._left.pformat(indent=indent, indLev=indLev+1)
             right = self._right.pformat(indent=indent, indLev=indLev+1)
             return "\n".join([ind + "AND", left, right])
+        if self._op == "SEQ":
+            left = self._left.pformat(indent=indent, indLev=indLev+1)
+            right = self._right.pformat(indent=indent, indLev=indLev+1)
+            return "\n".join([ind + "SEQ", left, right])
         if self._op == "OR":
             left = self._left.pformat(indent=indent, indLev=indLev+1)
             right = self._right.pformat(indent=indent, indLev=indLev+1)
