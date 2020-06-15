@@ -85,6 +85,22 @@ class Pred (object):
         elif self._op == "NOT":
             return ("NOT", self._pred.ast())
 
+    def validate (self, x):
+        if self._op == "PRED":
+            result = self._pred(x)
+            if result:
+                return {"pred": self, "op": "PRED", "result": True}
+            else:
+                if hasattr(self, "_fix"):
+                    self._fix(x)
+                    result = self._pred(x)
+                    if result:
+                        return {"pred": self, "op": "PRED", "result": True, "status": "FIXED"}
+                    else:
+                        return {"pred": self, "op": "PRED", "result": False, "status": "UNFIXED"}
+                else:
+                    return {"pred": self, "op": "PRED", "result": False}
+
     def pformat (self, indent=2, indLev=0, *args, **kwargs):
         ind = " " * indent * indLev
         if self._op == "PRED":
