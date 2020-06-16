@@ -6,9 +6,11 @@ from ..pred import *
 
 ident = lambda x: x
 
-lt  = lambda n: Pred(lambda x: x <  n, name="lt(" + str(n) + ")")
+lt  = lambda n: Pred(lambda x: x < n, name="lt(" + str(n) + ")")
+lte  = lambda n: Pred(lambda x: x <= n, name="lte(" + str(n) + ")")
 eq  = lambda n: Pred(lambda x: x == n, name="eq(" + str(n) + ")")
-gt  = lambda n: Pred(lambda x: x >  n, name="gt(" + str(n) + ")")
+gte  = lambda n: Pred(lambda x: x >= n, name="gte(" + str(n) + ")")
+gt  = lambda n: Pred(lambda x: x > n, name="gt(" + str(n) + ")")
 
 
 class Test_Pred (unittest.TestCase):
