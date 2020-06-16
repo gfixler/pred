@@ -194,6 +194,177 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(result["result"], False)
         self.assertEquals(result["status"], "UNFIXED")
 
+    def test_validate_AND_bothPass (self):
+        data = {"fname": "Bob", "lname": "Smith"}
+        a = Pred(lambda x: x["fname"] == "Bob", name="fname(\"Bob\")")
+        b = Pred(lambda x: x["lname"] == "Smith", name="lname(\"Smith\")")
+        p = a & b
+        result = p.validate(data)
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], True)
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], True)
+
+        self.assertEquals(result["op"], "AND")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+
+    def test_validate_AND_leftFails_noFix (self):
+        data = {"fname": "Bob", "lname": "Smith"}
+        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")")
+        b = Pred(lambda x: x["lname"] == "Smith", name="lname(\"Smith\")")
+        p = a & b
+        result = p.validate(data)
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], False)
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], True)
+
+        self.assertEquals(result["op"], "AND")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], False)
+
+    def test_validate_AND_leftFails_fixWorks (self):
+        data = {"fname": "Bob", "lname": "Smith"}
+        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")")
+        def fix (x):
+            x["fname"] = "John"
+        a._fix = fix
+        b = Pred(lambda x: x["lname"] == "Smith", name="lname(\"Smith\")")
+        p = a & b
+        result = p.validate(data)
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], True)
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], True)
+
+        self.assertEquals(result["op"], "AND")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+
+    def test_validate_AND_leftFails_fixFails (self):
+        data = {"fname": "Bob", "lname": "Smith"}
+        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")")
+        def fix (x):
+            x["fname"] = "Bill"
+        a._fix = fix
+        b = Pred(lambda x: x["lname"] == "Smith", name="lname(\"Smith\")")
+        p = a & b
+        result = p.validate(data)
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], False)
+        self.assertEquals(result["left"]["status"], "UNFIXED")
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], True)
+
+        self.assertEquals(result["op"], "AND")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], False)
+
+    def test_validate_AND_rightFails_fixWorks (self):
+        data = {"fname": "Bob", "lname": "Smith"}
+        a = Pred(lambda x: x["fname"] == "Bob", name="fname(\"Bob\")")
+        b = Pred(lambda x: x["lname"] == "Jones", name="lname(\"Smith\")")
+        def fix (x):
+            x["lname"] = "Jones"
+        b._fix = fix
+        p = a & b
+        result = p.validate(data)
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], True)
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], True)
+        self.assertEquals(result["right"]["status"], "FIXED")
+
+        self.assertEquals(result["op"], "AND")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+
+    def test_validate_AND_rightFails_fixFails (self):
+        data = {"fname": "Bob", "lname": "Smith"}
+        a = Pred(lambda x: x["fname"] == "Bob", name="fname(\"Bob\")")
+        b = Pred(lambda x: x["lname"] == "Jones", name="lname(\"Smith\")")
+        def fix (x):
+            x["lname"] = "Johnson"
+        b._fix = fix
+        p = a & b
+        result = p.validate(data)
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], True)
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], False)
+        self.assertEquals(result["right"]["status"], "UNFIXED")
+
+        self.assertEquals(result["op"], "AND")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], False)
+
+    def test_validate_AND_fixAtANDLevelWorks (self):
+        data = {"value": 23}
+        l = Pred(lambda x: x["value"] >= 0, name="key(value) >= 0")
+        r = Pred(lambda x: x["value"] <= 10, name="key(value) <= 10")
+        p = l & r
+        def fix (n):
+            data["value"] = n["value"] % 10
+        p._fix = fix
+        result = p.validate(data)
+        self.assertEquals(result["op"], "AND")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+        self.assertEquals(result["status"], "FIXED")
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], l)
+        self.assertEquals(result["left"]["result"], True)
+        self.assertTrue("status" not in result["left"])
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], r)
+        self.assertEquals(result["right"]["result"], True)
+        self.assertTrue("status" not in result["right"])
+
+    def test_validate_AND_fixAtANDLevelFails (self):
+        data = {"value": 23}
+        l = Pred(lambda x: x["value"] >= 0, name="key(value) >= 0")
+        r = Pred(lambda x: x["value"] <= 10, name="key(value) <= 10")
+        p = l & r
+        def fix (n):
+            data["value"] = 42
+        p._fix = fix
+        result = p.validate(data)
+        self.assertEquals(result["op"], "AND")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], False)
+        self.assertEquals(result["status"], "UNFIXED")
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], l)
+        self.assertEquals(result["left"]["result"], True)
+        self.assertTrue("status" not in result["left"])
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], r)
+        self.assertEquals(result["right"]["result"], False)
+        self.assertTrue("status" not in result["right"])
+
     def test_pformat_onePred (self):
         p = lt(3)
         self.assertEquals(p.pformat(), "lt(3)")
