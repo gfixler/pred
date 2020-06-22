@@ -39,3 +39,56 @@ predicates. Here's an interesting sequence of thoughts about this:
     iInName = name.contains("i")            # predicates are first class
     filter(iInName, chardb.items())         # filter, finds: [wilkv, jilkv]
 
+
+Sun Jun 21 14:39:32 PDT 2020
+
+DEPENDENCIES
+
+This is one of those things with problems you can't see until you start trying
+to implement it. The first problem I hit (a while back) with the idea of fixing
+issues through the Pred system is that you can really only fix things impurely.
+If you pass in a 3 as the target value to test, and you want to "fix" it to 4,
+there's no way to set anything to 4. Preds don't return values; they just reply
+with a boolean. Any fixing has to be a side effect. Initially, that felt to me
+like a reason to make dependencies, and fixing of things that fail Pred tests a
+separate idea, that piggybacked onto the Pred system, but doing that meant also
+redoing all of the Pred system at the new level. I tried to think of a clever,
+Haskelly way of "lifting" Pred powers up to the level of [the as yet not real]
+Validators, but couldn't find one, despite explorations of subclassing, and
+simple tupling of things. So, I relented, and decided to bake it all into Pred.
+
+The next thing I didn't see about dependencies is that AND and OR are a little
+bit weird. It's obvious that the predicate lt(0) & gt(0) will never pass, but
+less obvious that if you add fix functions to those, that they'll fight. If you
+have a fix for lt(0) that sets the value to -1, and another for gt(0) that sets
+it to 1, and you AND them together, a short-circuiting solution might find that
+lt(0) is False, and set it to -1, and that's it. A non-short-circuting solution
+would instead then also check the right side, find that now gt(0) is False, and
+set the value to 1, invalidating the first fix (which is never checked again).
+Of course, the first issue above means that these values can only be set via a
+side-effect, but I'm skipping that detail. This is a contrived example.
+
+Let's say, less contrivedly, that your team used to path all eye textures to a
+global texture folder, to the same eye texture, but now that game consoles are
+more powerful, you want everyone to have their own eye texture, so you've been
+making every new character with custom eye textures in their own folders, and
+occasionally updating some older ones, as well. So, you write an eye validator,
+which checks that your character is correctly using the old, global texture, OR
+that it's using a new, local version. Because we want validators to have rich
+result info, we run both sides of the OR. The left side Pred sees that it's not
+using the global texture, and its naive fix function is to set it to use that
+one. Then we run the right side Pred, and it sees that it's not (but could be)
+using an existing, local eye texture, so it sets it to that. In this case, it
+works out, but it did extra work of modifying the file, when it shouldn't have,
+and, if we were unaware of this logical problem, it's only dumb luck that we
+didn't set the texture back to the old, global version on the right side. This
+problem compounds if we imagine that AND and OR are also Preds, and can have
+their own fix functions, which, along with their tests, run after their child
+Preds (and any fixes) are run.
+
+There are probably solutions based on adding more cleverness to Preds, and
+their validate methods. I fall down on the side of documenting how validation
+can be tricky in some areas, and having users figure how to mitigate things on
+their own, because it keeps the underlying implementation simple, which is more
+important to me than most other things.
+
