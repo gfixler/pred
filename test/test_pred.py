@@ -341,6 +341,34 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(result["right"]["result"], True)
         self.assertTrue("status" not in result["right"])
 
+    def test_validate_AND_leftFixFailsANDLevelFixWorks (self):
+        data = [1,3,8,9]
+        l = Pred(lambda x: 2 in x, name="listContains(2)")
+        def fix (x):
+            x.append(4)
+        l._fix = fix
+        r = Pred(lambda x: 3 in x, name="listContains(3)")
+        p = l & r
+        def fix (x):
+            x.append(2)
+            x.append(3)
+        p._fix = fix
+        result = p.validate(data)
+        self.assertEquals(result["op"], "AND")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+        self.assertEquals(result["status"], "FIXED")
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], l)
+        self.assertEquals(result["left"]["result"], True)
+        self.assertTrue("status" not in result["left"])
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], r)
+        self.assertEquals(result["right"]["result"], True)
+        self.assertTrue("status" not in result["right"])
+
     def test_validate_AND_fixAtANDLevelFails (self):
         data = {"value": 23}
         l = Pred(lambda x: x["value"] >= 0, name="key(value) >= 0")
@@ -364,6 +392,155 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(result["right"]["pred"], r)
         self.assertEquals(result["right"]["result"], False)
         self.assertTrue("status" not in result["right"])
+
+    def test_validate_OR_bothPass (self):
+        data = [1,3,8,9]
+        a = Pred(lambda x: 3 in x, name="listContains(3)")
+        b = Pred(lambda x: 8 in x, name="listContains(8)")
+        p = a | b
+        result = p.validate(data)
+        self.assertEquals(result["op"], "OR")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], True)
+        self.assertFalse("status" in result["left"])
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], True)
+        self.assertFalse("status" in result["right"])
+
+    def test_validate_OR_leftFailsLeftFixFailsORSucceeds (self):
+        data = [1,3,8,9]
+        a = Pred(lambda x: 2 in x, name="listContains(2)")
+        def fix (x):
+            x.append(4)
+        a._fix = fix
+        b = Pred(lambda x: 8 in x, name="listContains(8)")
+        p = a | b
+        result = p.validate(data)
+        self.assertEquals(result["op"], "OR")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], False)
+        self.assertEquals(result["left"]["status"], "UNFIXED")
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], True)
+        self.assertFalse("status" in result["right"])
+
+    def test_validate_OR_rightFailsRightFixFailsORSucceeds (self):
+        data = [1,3,8,9]
+        a = Pred(lambda x: 3 in x, name="listContains(3)")
+        b = Pred(lambda x: 6 in x, name="listContains(6)")
+        def fix (x):
+            x.append(7)
+        b._fix = fix
+        p = a | b
+        result = p.validate(data)
+        self.assertEquals(result["op"], "OR")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], True)
+        self.assertFalse("status" in result["left"])
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], False)
+        self.assertEquals(result["right"]["status"], "UNFIXED")
+
+    def test_validate_OR_bothFailBothFixesSucceed (self):
+        data = [1,3,8,9]
+        a = Pred(lambda x: 2 in x, name="listContains(2)")
+        def fix (x):
+            x.append(2)
+        a._fix = fix
+        b = Pred(lambda x: 6 in x, name="listContains(6)")
+        def fix (x):
+            x.append(6)
+        b._fix = fix
+        p = a | b
+        result = p.validate(data)
+        self.assertEquals(result["op"], "OR")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], True)
+        self.assertEquals(result["right"]["status"], "FIXED")
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], True)
+        self.assertEquals(result["right"]["status"], "FIXED")
+
+    def test_validate_OR_bothFailBothFixesFailNoORFix (self):
+        data = [1,3,8,9]
+        a = Pred(lambda x: 2 in x, name="listContains(2)")
+        def fix (x):
+            x.append(4)
+        a._fix = fix
+        b = Pred(lambda x: 6 in x, name="listContains(6)")
+        def fix (x):
+            x.append(7)
+        b._fix = fix
+        p = a | b
+        result = p.validate(data)
+        self.assertEquals(result["op"], "OR")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], False)
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], False)
+        self.assertEquals(result["left"]["status"], "UNFIXED")
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], False)
+        self.assertEquals(result["right"]["status"], "UNFIXED")
+
+    def test_validate_OR_bothFailBothFixesFailORFixSucceeds (self):
+        data = [1,3,8,9]
+        a = Pred(lambda x: 2 in x, name="listContains(2)")
+        def fix (x):
+            x.append(4)
+        a._fix = fix
+        b = Pred(lambda x: 6 in x, name="listContains(6)")
+        def fix (x):
+            x.append(7)
+        b._fix = fix
+        p = a | b
+        def fix (x):
+            x.append(2)
+            x.append(6)
+        p._fix = fix
+        result = p.validate(data)
+        self.assertEquals(result["op"], "OR")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+        self.assertEquals(result["status"], "FIXED")
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], True)
+        self.assertFalse("status" in result["left"])
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], True)
+        self.assertFalse("status" in result["right"])
 
     def test_pformat_onePred (self):
         p = lt(3)

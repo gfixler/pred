@@ -118,6 +118,24 @@ class Pred (object):
                         return {"pred": self, "op": "AND", "left": left, "right": right, "result": False, "status": "UNFIXED"}
                 else:
                     return {"pred": self, "op": "AND", "left": left, "right": right, "result": False}
+        elif self._op == "OR":
+            left = self._left.validate(x)
+            right = self._right.validate(x)
+            result = left["result"] or right["result"]
+            if result:
+                return {"pred": self, "op": "OR", "left": left, "right": right, "result": True}
+            else:
+                if hasattr(self, "_fix"):
+                    self._fix(x)
+                    left = self._left.validate(x)
+                    right = self._right.validate(x)
+                    result = left["result"] or right["result"]
+                    if result:
+                        return {"pred": self, "op": "OR", "left": left, "right": right, "result": True, "status": "FIXED"}
+                    else:
+                        return {"pred": self, "op": "OR", "left": left, "right": right, "result": False, "status": "UNFIXED"}
+                else:
+                    return {"pred": self, "op": "OR", "left": left, "right": right, "result": False}
 
     def pformat (self, indent=2, indLev=0, *args, **kwargs):
         ind = " " * indent * indLev
