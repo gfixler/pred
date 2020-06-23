@@ -156,21 +156,21 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(nop, "PRED")
         self.assertTrue(callable(nerands))
 
-    def test_validate_simplePred_pass (self):
+    def test_validate_PRED_pass (self):
         p = eq(4)
         result = p.validate(4)
         self.assertEquals(result["op"], "PRED")
         self.assertEquals(result["pred"], p)
         self.assertEquals(result["result"], True)
 
-    def test_validate_simplePred_fail (self):
+    def test_validate_PRED_fail (self):
         p = eq(4)
         result = p.validate(3)
         self.assertEquals(result["op"], "PRED")
         self.assertEquals(result["pred"], p)
         self.assertEquals(result["result"], False)
 
-    def test_validate_simplePred_fixFails (self):
+    def test_validate_PRED_fixFails (self):
         data = {"value": "incorrect"}
         def fix (x):
             x["value"] = "still incorrect"
@@ -182,7 +182,7 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(result["result"], False)
         self.assertEquals(result["status"], "UNFIXED")
 
-    def test_validate_simplePred_fixWorks (self):
+    def test_validate_PRED_fixWorks (self):
         data = {"value": "incorrect"}
         def fix (x):
             x["value"] = "correct"
@@ -641,6 +641,46 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(result["right"]["pred"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertEquals(result["right"]["status"], "FIXED")
+
+    def test_validate_NOT_fail (self):
+        data = {"value": "shouldn't exist"}
+        p = ~Pred(lambda x: "value" in x)
+        result = p.validate(data)
+        self.assertEquals(result["op"], "NOT")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], False)
+
+    def test_validate_NOT_pass (self):
+        data = {"value": "shouldn't exist"}
+        p = ~Pred(lambda x: "nonvalue" in x)
+        result = p.validate(data)
+        self.assertEquals(result["op"], "NOT")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+
+    def test_validate_NOT_fixFails (self):
+        data = {"value": "shouldn't exist"}
+        p = ~Pred(lambda x: "value" in x)
+        def fix (x):
+            x["nonvalue"] = "not helping"
+        p._fix = fix
+        result = p.validate(data)
+        self.assertEquals(result["op"], "NOT")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], False)
+        self.assertEquals(result["status"], "UNFIXED")
+
+    def test_validate_NOT_fixWorks (self):
+        data = {"value": "shouldn't exist"}
+        p = ~Pred(lambda x: "value" in x)
+        def fix (x):
+            del x["value"]
+        p._fix = fix
+        result = p.validate(data)
+        self.assertEquals(result["op"], "NOT")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+        self.assertEquals(result["status"], "FIXED")
 
     def test_pformat_onePred (self):
         p = lt(3)
