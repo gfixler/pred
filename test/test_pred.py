@@ -185,8 +185,7 @@ class Test_Pred (unittest.TestCase):
         data = {"value": "incorrect"}
         def fix (x):
             x["value"] = "still incorrect"
-        p = Pred(lambda x: x["value"] == "correct")
-        p._fix = fix
+        p = Pred(lambda x: x["value"] == "correct", fix=fix)
         result = p.validate(data)
         self.assertEquals(result["op"], "PRED")
         self.assertEquals(result["pred"], p)
@@ -197,8 +196,7 @@ class Test_Pred (unittest.TestCase):
         data = {"value": "incorrect"}
         def fix (x):
             x["value"] = "correct"
-        p = Pred(lambda x: x["value"] == "correct")
-        p._fix = fix
+        p = Pred(lambda x: x["value"] == "correct", fix=fix)
         result = p.validate(data)
         self.assertEquals(result["op"], "PRED")
         self.assertEquals(result["pred"], p)
@@ -267,10 +265,9 @@ class Test_Pred (unittest.TestCase):
 
     def test_validate_AND_leftFails_fixFails (self):
         data = {"fname": "Bob", "lname": "Smith"}
-        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")")
         def fix (x):
             x["fname"] = "Bill"
-        a._fix = fix
+        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")", fix=fix)
         b = Pred(lambda x: x["lname"] == "Smith", name="lname(\"Smith\")")
         p = a & b
         result = p.validate(data)
@@ -290,10 +287,9 @@ class Test_Pred (unittest.TestCase):
 
     def test_validate_AND_leftFails_fixWorks (self):
         data = {"fname": "Bob", "lname": "Smith"}
-        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")")
         def fix (x):
             x["fname"] = "John"
-        a._fix = fix
+        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")", fix=fix)
         b = Pred(lambda x: x["lname"] == "Smith", name="lname(\"Smith\")")
         p = a & b
         result = p.validate(data)
@@ -334,10 +330,9 @@ class Test_Pred (unittest.TestCase):
     def test_validate_AND_rightFails_fixFails (self):
         data = {"fname": "Bob", "lname": "Smith"}
         a = Pred(lambda x: x["fname"] == "Bob", name="fname(\"Bob\")")
-        b = Pred(lambda x: x["lname"] == "Jones", name="lname(\"Smith\")")
         def fix (x):
             x["lname"] = "Johnson"
-        b._fix = fix
+        b = Pred(lambda x: x["lname"] == "Jones", name="lname(\"Smith\")", fix=fix)
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
@@ -357,10 +352,9 @@ class Test_Pred (unittest.TestCase):
     def test_validate_AND_rightFails_fixWorks (self):
         data = {"fname": "Bob", "lname": "Smith"}
         a = Pred(lambda x: x["fname"] == "Bob", name="fname(\"Bob\")")
-        b = Pred(lambda x: x["lname"] == "Jones", name="lname(\"Smith\")")
         def fix (x):
             x["lname"] = "Jones"
-        b._fix = fix
+        b = Pred(lambda x: x["lname"] == "Jones", name="lname(\"Smith\")", fix=fix)
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
@@ -379,14 +373,12 @@ class Test_Pred (unittest.TestCase):
 
     def test_validate_AND_bothFail_fixesFail (self):
         data = {"fname": "Bob", "lname": "Smith"}
-        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")")
         def fix (x):
             x["fname"] = "Frank"
-        a._fix = fix
-        b = Pred(lambda x: x["lname"] == "Johnson", name="lname(\"Johnson\")")
+        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")", fix=fix)
         def fix (x):
             x["lname"] = "Lewis"
-        b._fix = fix
+        b = Pred(lambda x: x["lname"] == "Johnson", name="lname(\"Johnson\")", fix=fix)
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
@@ -405,14 +397,12 @@ class Test_Pred (unittest.TestCase):
 
     def test_validate_AND_bothFail_fixesWork (self):
         data = {"fname": "Bob", "lname": "Smith"}
-        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")")
         def fix (x):
             x["fname"] = "John"
-        a._fix = fix
-        b = Pred(lambda x: x["lname"] == "Johnson", name="lname(\"Johnson\")")
+        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")", fix=fix)
         def fix (x):
             x["lname"] = "Johnson"
-        b._fix = fix
+        b = Pred(lambda x: x["lname"] == "Johnson", name="lname(\"Johnson\")", fix=fix)
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
@@ -491,10 +481,9 @@ class Test_Pred (unittest.TestCase):
 
     def test_validate_OR_leftFails_fixFails (self):
         data = [1,3,8,9]
-        a = Pred(lambda x: 2 in x, name="listContains(2)")
         def fix (x):
             x.append(4)
-        a._fix = fix
+        a = Pred(lambda x: 2 in x, name="listContains(2)", fix=fix)
         b = Pred(lambda x: 8 in x, name="listContains(8)")
         p = a | b
         result = p.validate(data)
@@ -514,10 +503,9 @@ class Test_Pred (unittest.TestCase):
 
     def test_validate_OR_leftFails_fixWorks (self):
         data = [1,3,8,9]
-        a = Pred(lambda x: 2 in x, name="listContains(2)")
         def fix (x):
             x.append(2)
-        a._fix = fix
+        a = Pred(lambda x: 2 in x, name="listContains(2)", fix=fix)
         b = Pred(lambda x: 8 in x, name="listContains(8)")
         p = a | b
         result = p.validate(data)
@@ -558,10 +546,9 @@ class Test_Pred (unittest.TestCase):
     def test_validate_OR_rightFails_fixFails (self):
         data = [1,3,8,9]
         a = Pred(lambda x: 3 in x, name="listContains(3)")
-        b = Pred(lambda x: 6 in x, name="listContains(6)")
         def fix (x):
             x.append(7)
-        b._fix = fix
+        b = Pred(lambda x: 6 in x, name="listContains(6)", fix=fix)
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
@@ -581,10 +568,9 @@ class Test_Pred (unittest.TestCase):
     def test_validate_OR_rightFails_fixWorks (self):
         data = [1,3,8,9]
         a = Pred(lambda x: 3 in x, name="listContains(3)")
-        b = Pred(lambda x: 7 in x, name="listContains(7)")
         def fix (x):
             x.append(7)
-        b._fix = fix
+        b = Pred(lambda x: 7 in x, name="listContains(7)", fix=fix)
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
@@ -603,14 +589,12 @@ class Test_Pred (unittest.TestCase):
 
     def test_validate_OR_bothFail_fixesFail (self):
         data = [1,3,8,9]
-        a = Pred(lambda x: 2 in x, name="listContains(2)")
         def fix (x):
             x.append(4)
-        a._fix = fix
-        b = Pred(lambda x: 6 in x, name="listContains(6)")
+        a = Pred(lambda x: 2 in x, name="listContains(2)", fix=fix)
         def fix (x):
             x.append(7)
-        b._fix = fix
+        b = Pred(lambda x: 6 in x, name="listContains(6)", fix=fix)
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
@@ -629,14 +613,12 @@ class Test_Pred (unittest.TestCase):
 
     def test_validate_OR_bothFail_fixesWork (self):
         data = [1,3,8,9]
-        a = Pred(lambda x: 2 in x, name="listContains(2)")
         def fix (x):
             x.append(2)
-        a._fix = fix
-        b = Pred(lambda x: 6 in x, name="listContains(6)")
+        a = Pred(lambda x: 2 in x, name="listContains(2)", fix=fix)
         def fix (x):
             x.append(6)
-        b._fix = fix
+        b = Pred(lambda x: 6 in x, name="listContains(6)", fix=fix)
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
@@ -740,10 +722,9 @@ class Test_Pred (unittest.TestCase):
 
     def test_validate_SEQ_leftFails_fixFails (self):
         data = {"wrongvalue": "wrongtarget"}
-        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
         def fix (x):
             x["stillnothelping"] = "useless"
-        a._fix = fix
+        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")", fix=fix)
         b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
         p = a >> b
         result = p.validate(data)
@@ -764,10 +745,9 @@ class Test_Pred (unittest.TestCase):
 
     def test_validate_SEQ_leftFails_fixWorks (self):
         data = {"wrongvalue": "wrongtarget"}
-        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
         def fix (x):
             x["value"] = "target"
-        a._fix = fix
+        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")", fix=fix)
         b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
         p = a >> b
         result = p.validate(data)
@@ -811,10 +791,9 @@ class Test_Pred (unittest.TestCase):
     def test_validate_SEQ_rightFails_fixFails (self):
         data = {"value": "wrongtarget"}
         a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
-        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
         def fix (x):
             x["value"] = "stillwrongtarget"
-        b._fix = fix
+        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")", fix=fix)
         p = a >> b
         result = p.validate(data)
         self.assertEquals(result["op"], "SEQ")
@@ -835,10 +814,9 @@ class Test_Pred (unittest.TestCase):
     def test_validate_SEQ_rightFails_fixWorks (self):
         data = {"value": "wrongtarget"}
         a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
-        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
         def fix (x):
             x["value"] = "target"
-        b._fix = fix
+        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")", fix=fix)
         p = a >> b
         result = p.validate(data)
         self.assertEquals(result["op"], "SEQ")
