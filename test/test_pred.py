@@ -164,21 +164,21 @@ class Test_Pred (unittest.TestCase):
         result = p.validate(data)
         self.assertTrue(result["result"])
         self.assertEquals(result["op"], "PRED")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["status"], "FIXED")
 
     def test_validate_PRED_pass (self):
         p = eq(4)
         result = p.validate(4)
         self.assertEquals(result["op"], "PRED")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
 
     def test_validate_PRED_fail (self):
         p = eq(4)
         result = p.validate(3)
         self.assertEquals(result["op"], "PRED")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
 
     def test_validate_PRED_fixFails (self):
@@ -188,7 +188,7 @@ class Test_Pred (unittest.TestCase):
         p = Pred(lambda x: x["value"] == "correct", fix=fix)
         result = p.validate(data)
         self.assertEquals(result["op"], "PRED")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
         self.assertEquals(result["status"], "UNFIXED")
 
@@ -199,7 +199,7 @@ class Test_Pred (unittest.TestCase):
         p = Pred(lambda x: x["value"] == "correct", fix=fix)
         result = p.validate(data)
         self.assertEquals(result["op"], "PRED")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
         self.assertEquals(result["status"], "FIXED")
 
@@ -210,16 +210,16 @@ class Test_Pred (unittest.TestCase):
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], False)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], False)
         self.assertFalse("status" in result["right"])
 
@@ -230,16 +230,16 @@ class Test_Pred (unittest.TestCase):
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertFalse("status" in result["right"])
 
@@ -250,16 +250,16 @@ class Test_Pred (unittest.TestCase):
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], False)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertFalse("status" in result["right"])
 
@@ -272,16 +272,16 @@ class Test_Pred (unittest.TestCase):
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], False)
         self.assertEquals(result["left"]["status"], "UNFIXED")
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertFalse("status" in result["right"])
 
@@ -294,16 +294,16 @@ class Test_Pred (unittest.TestCase):
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertEquals(result["left"]["status"], "FIXED")
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertFalse("status" in result["right"])
 
@@ -314,16 +314,16 @@ class Test_Pred (unittest.TestCase):
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], False)
         self.assertFalse("status" in result["right"])
 
@@ -336,16 +336,16 @@ class Test_Pred (unittest.TestCase):
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], False)
         self.assertEquals(result["right"]["status"], "UNFIXED")
 
@@ -358,16 +358,16 @@ class Test_Pred (unittest.TestCase):
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertEquals(result["right"]["status"], "FIXED")
 
@@ -382,16 +382,16 @@ class Test_Pred (unittest.TestCase):
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], False)
         self.assertEquals(result["left"]["status"], "UNFIXED")
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], False)
         self.assertEquals(result["right"]["status"], "UNFIXED")
 
@@ -406,16 +406,16 @@ class Test_Pred (unittest.TestCase):
         p = a & b
         result = p.validate(data)
         self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertEquals(result["left"]["status"], "FIXED")
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertEquals(result["right"]["status"], "FIXED")
 
@@ -426,16 +426,16 @@ class Test_Pred (unittest.TestCase):
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], False)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], False)
         self.assertFalse("status" in result["right"])
 
@@ -446,16 +446,16 @@ class Test_Pred (unittest.TestCase):
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertFalse("status" in result["right"])
 
@@ -466,16 +466,16 @@ class Test_Pred (unittest.TestCase):
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], False)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertFalse("status" in result["right"])
 
@@ -488,16 +488,16 @@ class Test_Pred (unittest.TestCase):
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], False)
         self.assertEquals(result["left"]["status"], "UNFIXED")
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertFalse("status" in result["right"])
 
@@ -510,16 +510,16 @@ class Test_Pred (unittest.TestCase):
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertEquals(result["left"]["status"], "FIXED")
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertFalse("status" in result["right"])
 
@@ -530,16 +530,16 @@ class Test_Pred (unittest.TestCase):
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], False)
         self.assertFalse("status" in result["right"])
 
@@ -552,16 +552,16 @@ class Test_Pred (unittest.TestCase):
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], False)
         self.assertEquals(result["right"]["status"], "UNFIXED")
 
@@ -574,16 +574,16 @@ class Test_Pred (unittest.TestCase):
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertEquals(result["right"]["status"], "FIXED")
 
@@ -598,16 +598,16 @@ class Test_Pred (unittest.TestCase):
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], False)
         self.assertEquals(result["left"]["status"], "UNFIXED")
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], False)
         self.assertEquals(result["right"]["status"], "UNFIXED")
 
@@ -622,16 +622,16 @@ class Test_Pred (unittest.TestCase):
         p = a | b
         result = p.validate(data)
         self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertEquals(result["right"]["status"], "FIXED")
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertEquals(result["right"]["status"], "FIXED")
 
@@ -640,16 +640,24 @@ class Test_Pred (unittest.TestCase):
         p = ~Pred(lambda x: "value" in x)
         result = p.validate(data)
         self.assertEquals(result["op"], "NOT")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
+
+        self.assertEquals(result["pred"]["op"], "PRED")
+        self.assertEquals(result["pred"]["ref"], p._pred)
+        self.assertEquals(result["pred"]["result"], True)
 
     def test_validate_NOT_pass (self):
         data = {"value": "shouldn't exist"}
         p = ~Pred(lambda x: "nonvalue" in x)
         result = p.validate(data)
         self.assertEquals(result["op"], "NOT")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
+
+        self.assertEquals(result["pred"]["op"], "PRED")
+        self.assertEquals(result["pred"]["ref"], p._pred)
+        self.assertEquals(result["pred"]["result"], False)
 
     def test_validate_SEQ_bothPass (self):
         data = {"value": "target"}
@@ -658,17 +666,17 @@ class Test_Pred (unittest.TestCase):
         p = a >> b
         result = p.validate(data)
         self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
         self.assertFalse("status" in result)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertFalse("status" in result["right"])
 
@@ -679,17 +687,17 @@ class Test_Pred (unittest.TestCase):
         p = a >> b
         result = p.validate(data)
         self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
         self.assertFalse("status" in result)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], False)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertFalse("result" in result["right"])
         self.assertFalse("status" in result["right"])
 
@@ -702,17 +710,17 @@ class Test_Pred (unittest.TestCase):
         p = a >> b
         result = p.validate(data)
         self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
         self.assertFalse("status" in result)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], False)
         self.assertEquals(result["left"]["status"], "UNFIXED")
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertFalse("result" in result["right"])
         self.assertFalse("status" in result["right"])
 
@@ -725,17 +733,17 @@ class Test_Pred (unittest.TestCase):
         p = a >> b
         result = p.validate(data)
         self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
         self.assertFalse("status" in result)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertEquals(result["left"]["status"], "FIXED")
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertFalse("status" in result["right"])
 
@@ -747,17 +755,17 @@ class Test_Pred (unittest.TestCase):
         p = a >> b
         result = p.validate(data)
         self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
         self.assertFalse("status" in result)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], False)
         self.assertFalse("status" in result["right"])
 
@@ -770,17 +778,17 @@ class Test_Pred (unittest.TestCase):
         p = a >> b
         result = p.validate(data)
         self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
         self.assertFalse("status" in result)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], False)
         self.assertEquals(result["right"]["status"], "UNFIXED")
 
@@ -793,17 +801,17 @@ class Test_Pred (unittest.TestCase):
         p = a >> b
         result = p.validate(data)
         self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], True)
         self.assertFalse("status" in result)
 
         self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["ref"], a)
         self.assertEquals(result["left"]["result"], True)
         self.assertFalse("status" in result["left"])
 
         self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["ref"], b)
         self.assertEquals(result["right"]["result"], True)
         self.assertEquals(result["right"]["status"], "FIXED")
 

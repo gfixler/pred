@@ -90,59 +90,60 @@ class Pred (object):
     def validate (self, x, noSolve=False):
         if noSolve:
             if self._op == "PRED":
-                return {"pred": self, "op": "PRED"}
+                return {"ref": self, "op": "PRED"}
             elif self._op in ["AND", "OR", "SEQ"]:
-                return {"pred": self, "op": self._op, left:self._left.validate(x, noSolve=True), right:self._right.validate(x, noSolve=True)}
+                return {"ref": self, "op": self._op, left:self._left.validate(x, noSolve=True), right:self._right.validate(x, noSolve=True)}
             elif self._op == "NOT":
-                return {"pred": self, "op": "NOT", left:self._pred.validate(x, noSolve=True)}
+                return {"ref": self, "op": "NOT", left:self._pred.validate(x, noSolve=True)}
 
         if self._op == "PRED":
             result = self._pred(x)
             if result:
-                return {"pred": self, "op": "PRED", "result": True}
+                return {"ref": self, "op": "PRED", "result": True}
             else:
                 if hasattr(self, "_fix"):
                     self._fix(x)
                     result = self._pred(x)
                     if result:
-                        return {"pred": self, "op": "PRED", "result": True, "status": "FIXED"}
+                        return {"ref": self, "op": "PRED", "result": True, "status": "FIXED"}
                     else:
-                        return {"pred": self, "op": "PRED", "result": False, "status": "UNFIXED"}
+                        return {"ref": self, "op": "PRED", "result": False, "status": "UNFIXED"}
                 else:
-                    return {"pred": self, "op": "PRED", "result": False}
+                    return {"ref": self, "op": "PRED", "result": False}
         elif self._op == "AND":
             left = self._left.validate(x)
             right = self._right.validate(x)
             result = left["result"] and right["result"]
             if result:
-                return {"pred": self, "op": "AND", "left": left, "right": right, "result": True}
+                return {"ref": self, "op": "AND", "left": left, "right": right, "result": True}
             else:
-                return {"pred": self, "op": "AND", "left": left, "right": right, "result": False}
+                return {"ref": self, "op": "AND", "left": left, "right": right, "result": False}
         elif self._op == "OR":
             left = self._left.validate(x)
             right = self._right.validate(x)
             result = left["result"] or right["result"]
             if result:
-                return {"pred": self, "op": "OR", "left": left, "right": right, "result": True}
+                return {"ref": self, "op": "OR", "left": left, "right": right, "result": True}
             else:
-                return {"pred": self, "op": "OR", "left": left, "right": right, "result": False}
+                return {"ref": self, "op": "OR", "left": left, "right": right, "result": False}
         elif self._op == "NOT":
-            result = not self._pred(x)
+            pred = self._pred.validate(x)
+            result = not pred["result"]
             if result:
-                return {"pred": self, "op": "NOT", "result": True}
+                return {"ref": self, "op": "NOT", "pred": pred, "result": True}
             else:
-                return {"pred": self, "op": "NOT", "result": False}
+                return {"ref": self, "op": "NOT", "pred": pred, "result": False}
         elif self._op == "SEQ":
             left = self._left.validate(x)
             if not left["result"]:
                 right = self._right.validate(x, noSolve=True)
-                return {"pred": self, "op": "SEQ", "left": left, "right": right, "result": False}
+                return {"ref": self, "op": "SEQ", "left": left, "right": right, "result": False}
             right = self._right.validate(x)
             result = left["result"] and right["result"]
             if result:
-                return {"pred": self, "op": "SEQ", "left": left, "right": right, "result": True}
+                return {"ref": self, "op": "SEQ", "left": left, "right": right, "result": True}
             else:
-                return {"pred": self, "op": "SEQ", "left": left, "right": right, "result": False}
+                return {"ref": self, "op": "SEQ", "left": left, "right": right, "result": False}
 
     def pformat (self, indent=2, indLev=0, *args, **kwargs):
         ind = " " * indent * indLev
