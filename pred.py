@@ -131,13 +131,6 @@ class Pred (object):
             if result:
                 return {"pred": self, "op": "NOT", "result": True}
             else:
-                if hasattr(self, "_fix"):
-                    self._fix(x)
-                    result = not self._pred(x)
-                    if result:
-                        return {"pred": self, "op": "NOT", "result": True, "status": "FIXED"}
-                    else:
-                        return {"pred": self, "op": "NOT", "result": False, "status": "UNFIXED"}
                 return {"pred": self, "op": "NOT", "result": False}
         elif self._op == "SEQ":
             left = self._left.validate(x)

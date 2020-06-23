@@ -651,33 +651,6 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(result["pred"], p)
         self.assertEquals(result["result"], True)
 
-    def test_validate_NOT_fixFails (self):
-        data = {"value": "shouldn't exist"}
-        p = ~Pred(lambda x: "value" in x)
-        def fix (x):
-            x["nonvalue"] = "not helping"
-        p._fix = fix
-        result = p.validate(data)
-        self.assertEquals(result["op"], "NOT")
-        self.assertEquals(result["pred"], p)
-        self.assertEquals(result["result"], False)
-        self.assertEquals(result["status"], "UNFIXED")
-
-    def test_validate_NOT_fixWorks (self):
-        data = {"value": "shouldn't exist"}
-        p = ~Pred(lambda x: "value" in x)
-        def fix (x):
-            del x["value"]
-        p._fix = fix
-        result = p.validate(data)
-        self.assertEquals(result["op"], "NOT")
-        self.assertEquals(result["pred"], p)
-        self.assertEquals(result["result"], True)
-        self.assertEquals(result["status"], "FIXED")
-
-    def test_validate_SEQ_bothFail (self):
-        pass
-
     def test_validate_SEQ_bothPass (self):
         data = {"value": "target"}
         a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
