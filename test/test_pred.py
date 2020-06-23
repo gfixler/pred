@@ -682,6 +682,169 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(result["result"], True)
         self.assertEquals(result["status"], "FIXED")
 
+    def test_validate_SEQ_bothFail (self):
+        pass
+
+    def test_validate_SEQ_bothPass (self):
+        data = {"value": "target"}
+        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
+        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
+        p = a >> b
+        result = p.validate(data)
+        self.assertEquals(result["op"], "SEQ")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+        self.assertFalse("status" in result)
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], True)
+        self.assertFalse("status" in result["left"])
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], True)
+        self.assertFalse("status" in result["right"])
+
+    def test_validate_SEQ_leftFails_noFix (self):
+        data = {"wrongvalue": "wrongtarget"}
+        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
+        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
+        p = a >> b
+        result = p.validate(data)
+        self.assertEquals(result["op"], "SEQ")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], False)
+        self.assertFalse("status" in result)
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], False)
+        self.assertFalse("status" in result["left"])
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertFalse("result" in result["right"])
+        self.assertFalse("status" in result["right"])
+
+    def test_validate_SEQ_leftFails_fixFails (self):
+        data = {"wrongvalue": "wrongtarget"}
+        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
+        def fix (x):
+            x["stillnothelping"] = "useless"
+        a._fix = fix
+        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
+        p = a >> b
+        result = p.validate(data)
+        self.assertEquals(result["op"], "SEQ")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], False)
+        self.assertFalse("status" in result)
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], False)
+        self.assertEquals(result["left"]["status"], "UNFIXED")
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertFalse("result" in result["right"])
+        self.assertFalse("status" in result["right"])
+
+    def test_validate_SEQ_leftFails_fixWorks (self):
+        data = {"wrongvalue": "wrongtarget"}
+        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
+        def fix (x):
+            x["value"] = "target"
+        a._fix = fix
+        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
+        p = a >> b
+        result = p.validate(data)
+        self.assertEquals(result["op"], "SEQ")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+        self.assertFalse("status" in result)
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], True)
+        self.assertEquals(result["left"]["status"], "FIXED")
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], True)
+        self.assertFalse("status" in result["right"])
+
+
+    def test_validate_SEQ_rightFails_noFix (self):
+        data = {"value": "wrongtarget"}
+        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
+        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
+        p = a >> b
+        result = p.validate(data)
+        self.assertEquals(result["op"], "SEQ")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], False)
+        self.assertFalse("status" in result)
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], True)
+        self.assertFalse("status" in result["left"])
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], False)
+        self.assertFalse("status" in result["right"])
+
+    def test_validate_SEQ_rightFails_fixFails (self):
+        data = {"value": "wrongtarget"}
+        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
+        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
+        def fix (x):
+            x["value"] = "stillwrongtarget"
+        b._fix = fix
+        p = a >> b
+        result = p.validate(data)
+        self.assertEquals(result["op"], "SEQ")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], False)
+        self.assertFalse("status" in result)
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], True)
+        self.assertFalse("status" in result["left"])
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], False)
+        self.assertEquals(result["right"]["status"], "UNFIXED")
+
+    def test_validate_SEQ_rightFails_fixWorks (self):
+        data = {"value": "wrongtarget"}
+        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
+        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
+        def fix (x):
+            x["value"] = "target"
+        b._fix = fix
+        p = a >> b
+        result = p.validate(data)
+        self.assertEquals(result["op"], "SEQ")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["result"], True)
+        self.assertFalse("status" in result)
+
+        self.assertEquals(result["left"]["op"], "PRED")
+        self.assertEquals(result["left"]["pred"], a)
+        self.assertEquals(result["left"]["result"], True)
+        self.assertFalse("status" in result["left"])
+
+        self.assertEquals(result["right"]["op"], "PRED")
+        self.assertEquals(result["right"]["pred"], b)
+        self.assertEquals(result["right"]["result"], True)
+        self.assertEquals(result["right"]["status"], "FIXED")
+
     def test_pformat_onePred (self):
         p = lt(3)
         self.assertEquals(p.pformat(), "lt(3)")

@@ -22,7 +22,7 @@ class Pred (object):
             return self._name == other._name
         elif self._op == "NOT":
             return self._pred == other._pred
-        elif self._op in ["AND", "OR"]:
+        elif self._op in ["AND", "OR", "SEQ"]:
             return self._left == other._left and self._right == other._right
 
     def __and__ (self, other):
@@ -85,7 +85,15 @@ class Pred (object):
         elif self._op == "NOT":
             return ("NOT", self._pred.ast())
 
-    def validate (self, x):
+    def validate (self, x, noSolve=False):
+        if noSolve:
+            if self._op == "PRED":
+                return {"pred": self, "op": "PRED"}
+            elif self._op in ["AND", "OR", "SEQ"]:
+                return {"pred": self, "op": self._op, left:self._left.validate(x, noSolve=True), right:self._right.validate(x, noSolve=True)}
+            elif self._op == "NOT":
+                return {"pred": self, "op": "NOT", left:self._pred.validate(x, noSolve=True)}
+
         if self._op == "PRED":
             result = self._pred(x)
             if result:
@@ -129,6 +137,17 @@ class Pred (object):
                     else:
                         return {"pred": self, "op": "NOT", "result": False, "status": "UNFIXED"}
                 return {"pred": self, "op": "NOT", "result": False}
+        elif self._op == "SEQ":
+            left = self._left.validate(x)
+            if not left["result"]:
+                right = self._right.validate(x, noSolve=True)
+                return {"pred": self, "op": "SEQ", "left": left, "right": right, "result": False}
+            right = self._right.validate(x)
+            result = left["result"] and right["result"]
+            if result:
+                return {"pred": self, "op": "SEQ", "left": left, "right": right, "result": True}
+            else:
+                return {"pred": self, "op": "SEQ", "left": left, "right": right, "result": False}
 
     def pformat (self, indent=2, indLev=0, *args, **kwargs):
         ind = " " * indent * indLev
