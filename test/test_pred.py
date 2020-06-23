@@ -156,6 +156,17 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(nop, "PRED")
         self.assertTrue(callable(nerands))
 
+    def test_canPassAFixFunction (self):
+        data = [1,2,4]
+        def fix (x):
+            x.append(3)
+        p = Pred(lambda x: 3 in x, fix=fix)
+        result = p.validate(data)
+        self.assertTrue(result["result"])
+        self.assertEquals(result["op"], "PRED")
+        self.assertEquals(result["pred"], p)
+        self.assertEquals(result["status"], "FIXED")
+
     def test_validate_PRED_pass (self):
         p = eq(4)
         result = p.validate(4)

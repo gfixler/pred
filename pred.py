@@ -3,10 +3,12 @@ inParens = lambda x: "(" + str(x) + ")"
 
 class Pred (object):
 
-    def __init__ (self, pred=None, name=None):
+    def __init__ (self, pred=None, name=None, fix=None):
         self._op = "PRED"
         self._pred = pred
         self._name = name if name else str(pred)
+        if callable(fix):
+            self._fix = fix
 
     def __call__ (self, x):
         if   self._op == "PRED": return self._pred(x)
