@@ -2,6 +2,7 @@ import re
 
 
 from .pred import Pred
+from ..mpath import Path
 
 
 class Accessor (object):
@@ -71,4 +72,10 @@ class NumAccessor (Accessor):
 
     def gt (self, n):
         return Pred(lambda i: self(i) > n, name="gt(" + str(n) + ")")
+
+
+class PathAccessor (Accessor):
+
+    def __call__ (self, *args):
+        return Path(self._accFunc(*args))
 
