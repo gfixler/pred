@@ -3,14 +3,23 @@ inParens = lambda x: "(" + str(x) + ")"
 
 class Pred (object):
 
-    def __init__ (self, pred=None, name=None, fix=None):
+    def __init__ (self, pred=None, name=None, fix=None, typeCon=None):
         self._op = "PRED"
         self._pred = pred
         self._name = name if name else str(pred)
         if callable(fix):
             self._fix = fix
+        self._typeCon = typeCon
 
     def __call__ (self, x):
+        if self._typeCon:
+            typeSpec, typePred = self._typeCon
+            if not typePred(x):
+                if isinstance(typeSpec, list):
+                    typesStr = " or ".join(map(str, typeSpec))
+                    raise TypeError, "Pred requires " + typesStr + "; received " + str(type(x))
+                else:
+                    raise TypeError, "Pred requires " + str(typeSpec) + "; received " + str(type(x))
         if   self._op == "PRED": return self._pred(x)
         elif self._op == "AND":  return self._left(x) and self._right(x)
         elif self._op == "SEQ":  return self._left(x) and self._right(x)

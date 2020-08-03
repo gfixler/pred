@@ -112,6 +112,22 @@ class Test_Pred (unittest.TestCase):
     def test_OR_namedNameStoredInNameProperty (self):
         self.assertEquals((lt(3) | gt(5))._name, "lt(3) | gt(5)")
 
+    def test_typeCon_raisesOnWrongType (self):
+        p = Pred(lambda x: x == "foo", typeCon=(str, lambda v: type(v) is str))
+        self.assertRaises(TypeError, lambda: p(23))
+
+    def test_typeCon_okayWithCorrectType (self):
+        p = Pred(lambda x: x == "foo", typeCon=(str, lambda v: type(v) is str))
+        self.assertFalse(p("bar"))
+
+    def test_typeCon_multipleSpecifiedTypes_failCase (self):
+        p = Pred(lambda x: x == 42, typeCon=([int, float], lambda v: type(v) in [int, float]))
+        self.assertRaises(TypeError, lambda: p("foo"))
+
+    def test_typeCon_multipleSpecifiedTypes_passCase (self):
+        p = Pred(lambda x: x == 42, typeCon=([int, float], lambda v: type(v) in [int, float]))
+        self.assertTrue(p(42.0))
+
     def test_ast_returnsOpPredPair (self):
         (op, ast) = gt(3).ast()
         self.assertEquals(op, "PRED")
