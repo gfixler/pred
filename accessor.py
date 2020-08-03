@@ -24,7 +24,7 @@ class StringAccessor (Accessor):
 
     def __call__ (self, *args):
         result = self._accFunc(*args)
-        if type(result) not in [str, unicode]:
+        if not isinstance(result, basestring):
             try:
                 raise TypeError, "StringAccessor accessed non-string object: " + str(result)
             except:
@@ -49,7 +49,7 @@ class NumAccessor (Accessor):
 
     def __call__ (self, *args):
         result = self._accFunc(*args)
-        if type(result) not in [int, float]:
+        if not (isinstance(result, int) or isinstance(result, float)):
             try:
                 raise TypeError, "NumAccessor accessed non-num object: " + str(result)
             except:
