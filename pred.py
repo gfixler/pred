@@ -9,7 +9,10 @@ class Pred (object):
         self._name = name if name else str(pred)
         if callable(fix):
             self._fix = fix
-        self._typeCon = typeCon
+        if type(typeCon) == list:
+            self._typeCon = sorted(typeCon)
+        else:
+            self._typeCon = typeCon
 
     def __call__ (self, x):
         if self._typeCon:
