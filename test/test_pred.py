@@ -138,6 +138,16 @@ class Test_Pred (unittest.TestCase):
         q = Pred(lambda x: x == "cat", typeCon=(str, lambda v: type(v) == str))
         self.assertRaises(TypeError, lambda: p & q)
 
+    def test_typeCon_SEQ_typesMatch (self):
+        p = Pred(lambda x: x > 0, typeCon=(int, lambda v: type(v) == int))
+        q = Pred(lambda x: x < 9, typeCon=(int, lambda v: type(v) == int))
+        self.assertTrue((p >> q)(5))
+
+    def test_typeCon_SEQ_typesDiffer (self):
+        p = Pred(lambda x: x > 0, typeCon=(int, lambda v: type(v) == int))
+        q = Pred(lambda x: x == "cat", typeCon=(str, lambda v: type(v) == str))
+        self.assertRaises(TypeError, lambda: p >> q)
+
     def test_typeCon_OR_typesMatch (self):
         p = Pred(lambda x: x < 3, typeCon=(int, lambda v: type(v) == int))
         q = Pred(lambda x: x > 5, typeCon=(int, lambda v: type(v) == int))

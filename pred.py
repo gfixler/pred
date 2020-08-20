@@ -55,6 +55,12 @@ class Pred (object):
         return p
 
     def __rshift__ (self, other):
+        if self._typeCon:
+            selfSpec, _ = self._typeCon
+            if other._typeCon:
+                otherSpec, _ = other._typeCon
+                if selfSpec != otherSpec:
+                    raise TypeError, "Cannot SEQ " + str(selfSpec) + " Pred with " + str(otherSpec) + " Pred"
         p = Pred()
         p._op = "SEQ"
         p._left = self
