@@ -128,6 +128,16 @@ class Test_Pred (unittest.TestCase):
         p = Pred(lambda x: x == 42, typeCon=([int, float], lambda v: type(v) in [int, float]))
         self.assertTrue(p(42.0))
 
+    def test_typeCon_AND_typesMatch (self):
+        p = Pred(lambda x: x > 0, typeCon=(int, lambda v: type(v) == int))
+        q = Pred(lambda x: x < 9, typeCon=(int, lambda v: type(v) == int))
+        self.assertTrue((p & q)(7))
+
+    def test_typeCon_AND_typesDiffer (self):
+        p = Pred(lambda x: x > 0, typeCon=(int, lambda v: type(v) == int))
+        q = Pred(lambda x: x == "cat", typeCon=(str, lambda v: type(v) == str))
+        self.assertRaises(TypeError, lambda: p & q)
+
     def test_ast_returnsOpPredPair (self):
         (op, ast) = gt(3).ast()
         self.assertEquals(op, "PRED")

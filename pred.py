@@ -40,11 +40,18 @@ class Pred (object):
             return self._left == other._left and self._right == other._right
 
     def __and__ (self, other):
+        if self._typeCon:
+            selfSpec, _ = self._typeCon
+            if other._typeCon:
+                otherSpec, _ = other._typeCon
+                if selfSpec != otherSpec:
+                    raise TypeError, "Cannot AND " + str(selfSpec) + " Pred with " + str(otherSpec) + " Pred"
         p = Pred()
         p._op = "AND"
         p._left = self
         p._right = other
         p._name = str(p)
+        p._typeCon = self._typeCon
         return p
 
     def __rshift__ (self, other):
