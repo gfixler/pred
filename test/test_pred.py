@@ -112,6 +112,52 @@ class Test_Pred (unittest.TestCase):
     def test_OR_namedNameStoredInNameProperty (self):
         self.assertEquals((lt(3) | gt(5))._name, "lt(3) | gt(5)")
 
+    def test_typeCon_raisesOnWrongType (self):
+        p = Pred(lambda x: x == "foo", typeCon=(str, lambda v: type(v) is str))
+        self.assertRaises(TypeError, lambda: p(23))
+
+    def test_typeCon_okayWithCorrectType (self):
+        p = Pred(lambda x: x == "foo", typeCon=(str, lambda v: type(v) is str))
+        self.assertFalse(p("bar"))
+
+    def test_typeCon_multipleSpecifiedTypes_failCase (self):
+        p = Pred(lambda x: x == 42, typeCon=([int, float], lambda v: type(v) in [int, float]))
+        self.assertRaises(TypeError, lambda: p("foo"))
+
+    def test_typeCon_multipleSpecifiedTypes_passCase (self):
+        p = Pred(lambda x: x == 42, typeCon=([int, float], lambda v: type(v) in [int, float]))
+        self.assertTrue(p(42.0))
+
+    def test_typeCon_AND_typesMatch (self):
+        p = Pred(lambda x: x > 0, typeCon=(int, lambda v: type(v) == int))
+        q = Pred(lambda x: x < 9, typeCon=(int, lambda v: type(v) == int))
+        self.assertTrue((p & q)(7))
+
+    def test_typeCon_AND_typesDiffer (self):
+        p = Pred(lambda x: x > 0, typeCon=(int, lambda v: type(v) == int))
+        q = Pred(lambda x: x == "cat", typeCon=(str, lambda v: type(v) == str))
+        self.assertRaises(TypeError, lambda: p & q)
+
+    def test_typeCon_SEQ_typesMatch (self):
+        p = Pred(lambda x: x > 0, typeCon=(int, lambda v: type(v) == int))
+        q = Pred(lambda x: x < 9, typeCon=(int, lambda v: type(v) == int))
+        self.assertTrue((p >> q)(5))
+
+    def test_typeCon_SEQ_typesDiffer (self):
+        p = Pred(lambda x: x > 0, typeCon=(int, lambda v: type(v) == int))
+        q = Pred(lambda x: x == "cat", typeCon=(str, lambda v: type(v) == str))
+        self.assertRaises(TypeError, lambda: p >> q)
+
+    def test_typeCon_OR_typesMatch (self):
+        p = Pred(lambda x: x < 3, typeCon=(int, lambda v: type(v) == int))
+        q = Pred(lambda x: x > 5, typeCon=(int, lambda v: type(v) == int))
+        self.assertTrue((p | q)(7))
+
+    def test_typeCon_OR_typesDiffer (self):
+        p = Pred(lambda x: x > 0, typeCon=(int, lambda v: type(v) == int))
+        q = Pred(lambda x: x == "cat", typeCon=(str, lambda v: type(v) == str))
+        self.assertRaises(TypeError, lambda: p | q)
+
     def test_ast_returnsOpPredPair (self):
         (op, ast) = gt(3).ast()
         self.assertEquals(op, "PRED")
