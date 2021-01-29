@@ -12,7 +12,7 @@ Explain
         True    &       raise   raise
         False   &       -       False   <- short circuited, works if B raises
         raise   |       -       raise
-        True    |       -       False   <- short circuited, works if B raises
+        True    |       -       True    <- short circuited, works if B raises
         False   |       raise   raise
 
 .match()
