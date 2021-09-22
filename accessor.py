@@ -14,7 +14,7 @@ class Accessor (object):
         return self._accFunc(*args)
 
     def pred (self, p, *args, **kwargs):
-        return Pred(lambda s: p(s), *args, **kwargs)
+        return Pred(lambda s: p(self(s)), *args, **kwargs)
 
     def equals (self, val):
         return Pred(lambda s: self(s) == val, name="(== " + str(val) + ")")
