@@ -1,8 +1,8 @@
 import re
 
 
-from .pred import Pred
-from ..mpath import Path
+from pred import Pred
+from mpath import Path
 
 
 class Accessor (object):
