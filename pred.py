@@ -123,9 +123,9 @@ class Pred (object):
             if self._op == "PRED":
                 return {"ref": self, "op": "PRED"}
             elif self._op in ["AND", "OR", "SEQ"]:
-                return {"ref": self, "op": self._op, left:self._left.validate(x, noSolve=True), right:self._right.validate(x, noSolve=True)}
+                return {"ref": self, "op": self._op, "left":self._left.validate(x, noSolve=True), "right":self._right.validate(x, noSolve=True)}
             elif self._op == "NOT":
-                return {"ref": self, "op": "NOT", left:self._pred.validate(x, noSolve=True)}
+                return {"ref": self, "op": "NOT", "pred":self._pred.validate(x, noSolve=True)}
 
         if self._op == "PRED":
             result = self._pred(x)

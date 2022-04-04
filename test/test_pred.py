@@ -227,6 +227,58 @@ class Test_Pred (unittest.TestCase):
         self.assertEquals(result["ref"], p)
         self.assertEquals(result["result"], False)
 
+    def test_validate_PRED_noSolve_hasNoResult (self):
+        p = eq(3)
+        result = p.validate(23, noSolve=True)
+        expected = { "op": "PRED"
+                   , "ref": p
+                   }
+        self.assertEquals(result, expected)
+
+    def test_validate_NOT_noSolve_hasNoResults (self):
+        q = eq(3)
+        p = ~q
+        result = p.validate(23, noSolve=True)
+        expected = { "op": "NOT"
+                   , "ref": p
+                   , "pred": { "op": "PRED"
+                             , "ref": q
+                             }
+                   }
+        self.assertEquals(result, expected)
+
+    def test_validate_AND_noSolve_hasNoResults (self):
+        a = eq(7)
+        b = eq(3)
+        p = a & b
+        result = p.validate(17, noSolve=True)
+        expected = { "op": "AND"
+                   , "ref": p
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              }
+                   }
+        self.assertEquals(result, expected)
+
+    def test_validate_OR_noSolve_hasNoResults (self):
+        a = eq(7)
+        b = eq(3)
+        p = a | b
+        result = p.validate(17, noSolve=True)
+        expected = { "op": "OR"
+                   , "ref": p
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              }
+                   }
+        self.assertEquals(result, expected)
+
     def test_validate_PRED_fixFails (self):
         data = {"value": "incorrect"}
         def fix (x):
