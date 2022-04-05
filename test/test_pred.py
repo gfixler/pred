@@ -208,24 +208,30 @@ class Test_Pred (unittest.TestCase):
             x.append(3)
         p = Pred(lambda x: 3 in x, fix=fix)
         result = p.validate(data)
-        self.assertTrue(result["result"])
-        self.assertEquals(result["op"], "PRED")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["status"], "FIXED")
+        expected = { "op": "PRED"
+                   , "ref": p
+                   , "result": True
+                   , "status": "FIXED"
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_PRED_pass (self):
         p = eq(4)
         result = p.validate(4)
-        self.assertEquals(result["op"], "PRED")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
+        expected = { "op": "PRED"
+                   , "ref": p
+                   , "result": True
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_PRED_fail (self):
         p = eq(4)
         result = p.validate(3)
-        self.assertEquals(result["op"], "PRED")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
+        expected = { "op": "PRED"
+                   , "ref": p
+                   , "result": False
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_PRED_noSolve_hasNoResult (self):
         p = eq(3)
@@ -285,10 +291,12 @@ class Test_Pred (unittest.TestCase):
             x["value"] = "still incorrect"
         p = Pred(lambda x: x["value"] == "correct", fix=fix)
         result = p.validate(data)
-        self.assertEquals(result["op"], "PRED")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-        self.assertEquals(result["status"], "UNFIXED")
+        expected = { "op": "PRED"
+                   , "ref": p
+                   , "result": False
+                   , "status": "UNFIXED"
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_PRED_fixWorks (self):
         data = {"value": "incorrect"}
@@ -296,622 +304,642 @@ class Test_Pred (unittest.TestCase):
             x["value"] = "correct"
         p = Pred(lambda x: x["value"] == "correct", fix=fix)
         result = p.validate(data)
-        self.assertEquals(result["op"], "PRED")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-        self.assertEquals(result["status"], "FIXED")
+        expected = { "op": "PRED"
+                   , "ref": p
+                   , "result": True
+                   , "status": "FIXED"
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_AND_bothFail (self):
         data = {"fname": "Bob", "lname": "Smith"}
-        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")")
-        b = Pred(lambda x: x["lname"] == "Johnson", name="lname(\"Johnson\")")
+        a = Pred(lambda x: x["fname"] == "John")
+        b = Pred(lambda x: x["lname"] == "Johnson")
         p = a & b
         result = p.validate(data)
-        self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], False)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], False)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "AND"
+                   , "ref": p
+                   , "result": False
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": False
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": False
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_AND_bothPass (self):
         data = {"fname": "Bob", "lname": "Smith"}
-        a = Pred(lambda x: x["fname"] == "Bob", name="fname(\"Bob\")")
-        b = Pred(lambda x: x["lname"] == "Smith", name="lname(\"Smith\")")
+        a = Pred(lambda x: x["fname"] == "Bob")
+        b = Pred(lambda x: x["lname"] == "Smith")
         p = a & b
         result = p.validate(data)
-        self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "AND"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": p
+                             , "result": True
+                             }
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_AND_leftFails_noFix (self):
         data = {"fname": "Bob", "lname": "Smith"}
-        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")")
-        b = Pred(lambda x: x["lname"] == "Smith", name="lname(\"Smith\")")
+        a = Pred(lambda x: x["fname"] == "John")
+        b = Pred(lambda x: x["lname"] == "Smith")
         p = a & b
         result = p.validate(data)
-        self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], False)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "AND"
+                   , "ref": p
+                   , "result": False
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": False
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_AND_leftFails_fixFails (self):
         data = {"fname": "Bob", "lname": "Smith"}
         def fix (x):
             x["fname"] = "Bill"
-        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")", fix=fix)
-        b = Pred(lambda x: x["lname"] == "Smith", name="lname(\"Smith\")")
+        a = Pred(lambda x: x["fname"] == "John", fix=fix)
+        b = Pred(lambda x: x["lname"] == "Smith")
         p = a & b
         result = p.validate(data)
-        self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], False)
-        self.assertEquals(result["left"]["status"], "UNFIXED")
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "AND"
+                   , "ref": p
+                   , "result": False
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": False
+                             , "status": "UNFIXED"
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_AND_leftFails_fixWorks (self):
         data = {"fname": "Bob", "lname": "Smith"}
         def fix (x):
             x["fname"] = "John"
-        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")", fix=fix)
-        b = Pred(lambda x: x["lname"] == "Smith", name="lname(\"Smith\")")
+        a = Pred(lambda x: x["fname"] == "John", fix=fix)
+        b = Pred(lambda x: x["lname"] == "Smith")
         p = a & b
         result = p.validate(data)
-        self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertEquals(result["left"]["status"], "FIXED")
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "AND"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             , "status": "FIXED"
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_AND_rightFails_noFix (self):
         data = {"fname": "Bob", "lname": "Smith"}
-        a = Pred(lambda x: x["fname"] == "Bob", name="fname(\"Bob\")")
-        b = Pred(lambda x: x["lname"] == "Johnson", name="lname(\"Johnson\")")
+        a = Pred(lambda x: x["fname"] == "Bob")
+        b = Pred(lambda x: x["lname"] == "Johnson")
         p = a & b
         result = p.validate(data)
-        self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], False)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "AND"
+                   , "ref": p
+                   , "result": False
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": False
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_AND_rightFails_fixFails (self):
         data = {"fname": "Bob", "lname": "Smith"}
-        a = Pred(lambda x: x["fname"] == "Bob", name="fname(\"Bob\")")
+        a = Pred(lambda x: x["fname"] == "Bob")
         def fix (x):
             x["lname"] = "Johnson"
-        b = Pred(lambda x: x["lname"] == "Jones", name="lname(\"Smith\")", fix=fix)
+        b = Pred(lambda x: x["lname"] == "Jones", fix=fix)
         p = a & b
         result = p.validate(data)
-        self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], False)
-        self.assertEquals(result["right"]["status"], "UNFIXED")
+        expected = { "op": "AND"
+                   , "ref": p
+                   , "result": False
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": False
+                              , "status": "UNFIXED"
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_AND_rightFails_fixWorks (self):
         data = {"fname": "Bob", "lname": "Smith"}
-        a = Pred(lambda x: x["fname"] == "Bob", name="fname(\"Bob\")")
+        a = Pred(lambda x: x["fname"] == "Bob")
         def fix (x):
             x["lname"] = "Jones"
-        b = Pred(lambda x: x["lname"] == "Jones", name="lname(\"Smith\")", fix=fix)
+        b = Pred(lambda x: x["lname"] == "Jones", fix=fix)
         p = a & b
         result = p.validate(data)
-        self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertEquals(result["right"]["status"], "FIXED")
+        expected = { "op": "AND"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              , "status": "FIXED"
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_AND_bothFail_fixesFail (self):
         data = {"fname": "Bob", "lname": "Smith"}
         def fix (x):
             x["fname"] = "Frank"
-        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")", fix=fix)
+        a = Pred(lambda x: x["fname"] == "John", fix=fix)
         def fix (x):
             x["lname"] = "Lewis"
-        b = Pred(lambda x: x["lname"] == "Johnson", name="lname(\"Johnson\")", fix=fix)
+        b = Pred(lambda x: x["lname"] == "Johnson", fix=fix)
         p = a & b
         result = p.validate(data)
-        self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], False)
-        self.assertEquals(result["left"]["status"], "UNFIXED")
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], False)
-        self.assertEquals(result["right"]["status"], "UNFIXED")
+        expected = { "op": "AND"
+                   , "ref": p
+                   , "result": False
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": False
+                              , "status": "UNFIXED"
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": False
+                              , "status": "UNFIXED"
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_AND_bothFail_fixesWork (self):
         data = {"fname": "Bob", "lname": "Smith"}
         def fix (x):
             x["fname"] = "John"
-        a = Pred(lambda x: x["fname"] == "John", name="fname(\"John\")", fix=fix)
+        a = Pred(lambda x: x["fname"] == "John", fix=fix)
         def fix (x):
             x["lname"] = "Johnson"
-        b = Pred(lambda x: x["lname"] == "Johnson", name="lname(\"Johnson\")", fix=fix)
+        b = Pred(lambda x: x["lname"] == "Johnson", fix=fix)
         p = a & b
         result = p.validate(data)
-        self.assertEquals(result["op"], "AND")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertEquals(result["left"]["status"], "FIXED")
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertEquals(result["right"]["status"], "FIXED")
+        expected = { "op": "AND"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             , "status": "FIXED"
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              , "status": "FIXED"
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_OR_bothFail (self):
         data = [1,3,8,9]
-        a = Pred(lambda x: 2 in x, name="listContains(2)")
-        b = Pred(lambda x: 6 in x, name="listContains(6)")
+        a = Pred(lambda x: 2 in x)
+        b = Pred(lambda x: 6 in x)
         p = a | b
         result = p.validate(data)
-        self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], False)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], False)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "OR"
+                   , "ref": p
+                   , "result": False
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": False
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": False
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_OR_bothPass (self):
         data = [1,3,8,9]
-        a = Pred(lambda x: 3 in x, name="listContains(3)")
-        b = Pred(lambda x: 8 in x, name="listContains(8)")
+        a = Pred(lambda x: 3 in x)
+        b = Pred(lambda x: 8 in x)
         p = a | b
         result = p.validate(data)
-        self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "OR"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_OR_leftFails_noFix (self):
         data = [1,3,8,9]
-        a = Pred(lambda x: 2 in x, name="listContains(2)")
-        b = Pred(lambda x: 8 in x, name="listContains(8)")
+        a = Pred(lambda x: 2 in x)
+        b = Pred(lambda x: 8 in x)
         p = a | b
         result = p.validate(data)
-        self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], False)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "OR"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": False
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_OR_leftFails_fixFails (self):
         data = [1,3,8,9]
         def fix (x):
             x.append(4)
-        a = Pred(lambda x: 2 in x, name="listContains(2)", fix=fix)
-        b = Pred(lambda x: 8 in x, name="listContains(8)")
+        a = Pred(lambda x: 2 in x, fix=fix)
+        b = Pred(lambda x: 8 in x)
         p = a | b
         result = p.validate(data)
-        self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], False)
-        self.assertEquals(result["left"]["status"], "UNFIXED")
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "OR"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": False
+                             , "status": "UNFIXED"
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_OR_leftFails_fixWorks (self):
         data = [1,3,8,9]
         def fix (x):
             x.append(2)
-        a = Pred(lambda x: 2 in x, name="listContains(2)", fix=fix)
-        b = Pred(lambda x: 8 in x, name="listContains(8)")
+        a = Pred(lambda x: 2 in x, fix=fix)
+        b = Pred(lambda x: 8 in x)
         p = a | b
         result = p.validate(data)
-        self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertEquals(result["left"]["status"], "FIXED")
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "OR"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             , "status": "FIXED"
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_OR_rightFails_noFix (self):
         data = [1,3,8,9]
-        a = Pred(lambda x: 3 in x, name="listContains(3)")
-        b = Pred(lambda x: 6 in x, name="listContains(6)")
+        a = Pred(lambda x: 3 in x)
+        b = Pred(lambda x: 6 in x)
         p = a | b
         result = p.validate(data)
-        self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], False)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "OR"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": False
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_OR_rightFails_fixFails (self):
         data = [1,3,8,9]
-        a = Pred(lambda x: 3 in x, name="listContains(3)")
+        a = Pred(lambda x: 3 in x)
         def fix (x):
             x.append(7)
-        b = Pred(lambda x: 6 in x, name="listContains(6)", fix=fix)
+        b = Pred(lambda x: 6 in x, fix=fix)
         p = a | b
         result = p.validate(data)
-        self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], False)
-        self.assertEquals(result["right"]["status"], "UNFIXED")
+        expected = { "op": "OR"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": False
+                              , "status": "UNFIXED"
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_OR_rightFails_fixWorks (self):
         data = [1,3,8,9]
-        a = Pred(lambda x: 3 in x, name="listContains(3)")
+        a = Pred(lambda x: 3 in x)
         def fix (x):
             x.append(7)
-        b = Pred(lambda x: 7 in x, name="listContains(7)", fix=fix)
+        b = Pred(lambda x: 7 in x, fix=fix)
         p = a | b
         result = p.validate(data)
-        self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertEquals(result["right"]["status"], "FIXED")
+        expected = { "op": "OR"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              , "status": "FIXED"
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_OR_bothFail_fixesFail (self):
         data = [1,3,8,9]
         def fix (x):
             x.append(4)
-        a = Pred(lambda x: 2 in x, name="listContains(2)", fix=fix)
+        a = Pred(lambda x: 2 in x, fix=fix)
         def fix (x):
             x.append(7)
-        b = Pred(lambda x: 6 in x, name="listContains(6)", fix=fix)
+        b = Pred(lambda x: 6 in x, fix=fix)
         p = a | b
         result = p.validate(data)
-        self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], False)
-        self.assertEquals(result["left"]["status"], "UNFIXED")
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], False)
-        self.assertEquals(result["right"]["status"], "UNFIXED")
+        expected = { "op": "OR"
+                   , "ref": p
+                   , "result": False
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": False
+                             , "status": "UNFIXED"
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": False
+                              , "status": "UNFIXED"
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_OR_bothFail_fixesWork (self):
         data = [1,3,8,9]
         def fix (x):
             x.append(2)
-        a = Pred(lambda x: 2 in x, name="listContains(2)", fix=fix)
+        a = Pred(lambda x: 2 in x, fix=fix)
         def fix (x):
             x.append(6)
-        b = Pred(lambda x: 6 in x, name="listContains(6)", fix=fix)
+        b = Pred(lambda x: 6 in x, fix=fix)
         p = a | b
         result = p.validate(data)
-        self.assertEquals(result["op"], "OR")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertEquals(result["right"]["status"], "FIXED")
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertEquals(result["right"]["status"], "FIXED")
+        expected = { "op": "OR"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             , "status": "FIXED"
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              , "status": "FIXED"
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_NOT_fail (self):
-        data = {"value": "shouldn't exist"}
+        data = {"value": 42}
         p = ~Pred(lambda x: "value" in x)
         result = p.validate(data)
-        self.assertEquals(result["op"], "NOT")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-
-        self.assertEquals(result["pred"]["op"], "PRED")
-        self.assertEquals(result["pred"]["ref"], p._pred)
-        self.assertEquals(result["pred"]["result"], True)
+        expected = { "op": "NOT"
+                   , "ref": p
+                   , "result": False
+                   , "pred": { "op": "PRED"
+                             , "ref": p._pred
+                             , "result": True
+                             }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_NOT_pass (self):
-        data = {"value": "shouldn't exist"}
+        data = {"value": 42}
         p = ~Pred(lambda x: "nonvalue" in x)
         result = p.validate(data)
-        self.assertEquals(result["op"], "NOT")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-
-        self.assertEquals(result["pred"]["op"], "PRED")
-        self.assertEquals(result["pred"]["ref"], p._pred)
-        self.assertEquals(result["pred"]["result"], False)
+        expected = { "op": "NOT"
+                   , "ref": p
+                   , "result": True
+                   , "pred": { "op": "PRED"
+                             , "ref": p._pred
+                             , "result": False
+                             }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_SEQ_bothPass (self):
         data = {"value": "target"}
-        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
-        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
+        a = Pred(lambda x: "value" in x)
+        b = Pred(lambda x: x["value"] == "target")
         p = a >> b
         result = p.validate(data)
-        self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-        self.assertFalse("status" in result)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "SEQ"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_SEQ_leftFails_noFix (self):
         data = {"wrongvalue": "wrongtarget"}
-        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
-        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
+        a = Pred(lambda x: "value" in x)
+        b = Pred(lambda x: x["value"] == "target")
         p = a >> b
         result = p.validate(data)
-        self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-        self.assertFalse("status" in result)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], False)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertFalse("result" in result["right"])
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "SEQ"
+                   , "ref": p
+                   , "result": False
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": False
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_SEQ_leftFails_fixFails (self):
         data = {"wrongvalue": "wrongtarget"}
         def fix (x):
             x["stillnothelping"] = "useless"
-        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")", fix=fix)
-        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
+        a = Pred(lambda x: "value" in x, fix=fix)
+        b = Pred(lambda x: x["value"] == "target")
         p = a >> b
         result = p.validate(data)
-        self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-        self.assertFalse("status" in result)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], False)
-        self.assertEquals(result["left"]["status"], "UNFIXED")
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertFalse("result" in result["right"])
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "SEQ"
+                   , "ref": p
+                   , "result": False
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": False
+                             , "status": "UNFIXED"
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_SEQ_leftFails_fixWorks (self):
         data = {"wrongvalue": "wrongtarget"}
         def fix (x):
             x["value"] = "target"
-        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")", fix=fix)
-        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
+        a = Pred(lambda x: "value" in x, fix=fix)
+        b = Pred(lambda x: x["value"] == "target")
         p = a >> b
         result = p.validate(data)
-        self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-        self.assertFalse("status" in result)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertEquals(result["left"]["status"], "FIXED")
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertFalse("status" in result["right"])
-
+        expected = { "op": "SEQ"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             , "status": "FIXED"
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_SEQ_rightFails_noFix (self):
         data = {"value": "wrongtarget"}
-        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
-        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")")
+        a = Pred(lambda x: "value" in x)
+        b = Pred(lambda x: x["value"] == "target")
         p = a >> b
         result = p.validate(data)
-        self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-        self.assertFalse("status" in result)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], False)
-        self.assertFalse("status" in result["right"])
+        expected = { "op": "SEQ"
+                   , "ref": p
+                   , "result": False
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": False
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_SEQ_rightFails_fixFails (self):
         data = {"value": "wrongtarget"}
-        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
+        a = Pred(lambda x: "value" in x)
         def fix (x):
             x["value"] = "stillwrongtarget"
-        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")", fix=fix)
+        b = Pred(lambda x: x["value"] == "target", fix=fix)
         p = a >> b
         result = p.validate(data)
-        self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], False)
-        self.assertFalse("status" in result)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], False)
-        self.assertEquals(result["right"]["status"], "UNFIXED")
+        expected = { "op": "SEQ"
+                   , "ref": p
+                   , "result": False
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": False
+                              , "status": "UNFIXED"
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_validate_SEQ_rightFails_fixWorks (self):
         data = {"value": "wrongtarget"}
-        a = Pred(lambda x: "value" in x, name="dictHasKey(\"value\")")
+        a = Pred(lambda x: "value" in x)
         def fix (x):
             x["value"] = "target"
-        b = Pred(lambda x: x["value"] == "target", name="key(\"value\").eq(\"target\")", fix=fix)
+        b = Pred(lambda x: x["value"] == "target", fix=fix)
         p = a >> b
         result = p.validate(data)
-        self.assertEquals(result["op"], "SEQ")
-        self.assertEquals(result["ref"], p)
-        self.assertEquals(result["result"], True)
-        self.assertFalse("status" in result)
-
-        self.assertEquals(result["left"]["op"], "PRED")
-        self.assertEquals(result["left"]["ref"], a)
-        self.assertEquals(result["left"]["result"], True)
-        self.assertFalse("status" in result["left"])
-
-        self.assertEquals(result["right"]["op"], "PRED")
-        self.assertEquals(result["right"]["ref"], b)
-        self.assertEquals(result["right"]["result"], True)
-        self.assertEquals(result["right"]["status"], "FIXED")
+        expected = { "op": "SEQ"
+                   , "ref": p
+                   , "result": True
+                   , "left": { "op": "PRED"
+                             , "ref": a
+                             , "result": True
+                             }
+                   , "right": { "op": "PRED"
+                              , "ref": b
+                              , "result": True
+                              , "status": "FIXED"
+                              }
+                   }
+        self.assertEquals(result, expected)
 
     def test_pformat_onePred (self):
         p = lt(3)
