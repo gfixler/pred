@@ -3,7 +3,7 @@ from nose.plugins.attrib import attr
 
 import tempfile
 
-from ..accessor import Accessor, StringAccessor, NumAccessor, PathAccessor
+from ..accessor import Accessor, StringAccessor, NumAccessor
 
 
 ident = lambda x: x
@@ -135,27 +135,4 @@ class Test_NumAccessor (unittest.TestCase):
     def test_gtIsNamedCorrectly (self):
         p = NumAccessor(ident).gt(4)
         self.assertEquals(str(p), "gt(4)")
-
-
-class Test_PathAccessor (unittest.TestCase):
-
-    def setUp (self):
-        self.path = tempfile.gettempdir() + "/testFile.txt"
-        self.payload = "testing"
-        with open(self.path, "w") as f:
-            f.write(self.payload)
-        self.data = {"filepath": self.path}
-        self.accpath = PathAccessor(lambda d: d["filepath"])
-        self.result = self.accpath(self.data)
-
-    def test_canAccessPath (self):
-        self.assertEquals(self.result, self.path)
-
-    def test_canCheckPathExistence (self):
-        self.assertTrue(self.result.exists())
-
-    def test_canReadFromFileAtAccessedPath (self):
-        with open(self.result) as f:
-            result = f.read()
-        self.assertEquals(result, self.payload)
 
