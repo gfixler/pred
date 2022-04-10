@@ -3,14 +3,26 @@ inParens = lambda x: "(" + str(x) + ")"
 
 class Pred (object):
 
-    def __init__ (self, pred=None, name=None, fix=None):
+    def __init__ (self, pred=None, name=None, fix=None, typeCon=None):
         self._op = "PRED"
         self._pred = pred
         self._name = name if name else str(pred)
         if callable(fix):
             self._fix = fix
+        if type(typeCon) == list:
+            self._typeCon = sorted(typeCon)
+        else:
+            self._typeCon = typeCon
 
     def __call__ (self, x):
+        if self._typeCon:
+            typeSpec, typePred = self._typeCon
+            if not typePred(x):
+                if isinstance(typeSpec, list):
+                    typesStr = " or ".join(map(str, typeSpec))
+                    raise TypeError, "Pred requires " + typesStr + "; received " + str(type(x))
+                else:
+                    raise TypeError, "Pred requires " + str(typeSpec) + "; received " + str(type(x))
         if   self._op == "PRED": return self._pred(x)
         elif self._op == "AND":  return self._left(x) and self._right(x)
         elif self._op == "SEQ":  return self._left(x) and self._right(x)
@@ -28,14 +40,27 @@ class Pred (object):
             return self._left == other._left and self._right == other._right
 
     def __and__ (self, other):
+        if self._typeCon:
+            selfSpec, _ = self._typeCon
+            if other._typeCon:
+                otherSpec, _ = other._typeCon
+                if selfSpec != otherSpec:
+                    raise TypeError, "Cannot AND " + str(selfSpec) + " Pred with " + str(otherSpec) + " Pred"
         p = Pred()
         p._op = "AND"
         p._left = self
         p._right = other
         p._name = str(p)
+        p._typeCon = self._typeCon
         return p
 
     def __rshift__ (self, other):
+        if self._typeCon:
+            selfSpec, _ = self._typeCon
+            if other._typeCon:
+                otherSpec, _ = other._typeCon
+                if selfSpec != otherSpec:
+                    raise TypeError, "Cannot SEQ " + str(selfSpec) + " Pred with " + str(otherSpec) + " Pred"
         p = Pred()
         p._op = "SEQ"
         p._left = self
@@ -44,6 +69,12 @@ class Pred (object):
         return p
 
     def __or__ (self, other):
+        if self._typeCon:
+            selfSpec, _ = self._typeCon
+            if other._typeCon:
+                otherSpec, _ = other._typeCon
+                if selfSpec != otherSpec:
+                    raise TypeError, "Cannot OR " + str(selfSpec) + " Pred with " + str(otherSpec) + " Pred"
         p = Pred()
         p._op = "OR"
         p._left = self
