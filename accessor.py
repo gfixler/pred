@@ -16,8 +16,14 @@ class Accessor (object):
     def __str__ (self):
         return self._name or str(self._accFunc)
 
-    def pred (self, p, *args, **kwargs):
-        return Pred(lambda s: p(self(s)), *args, **kwargs)
+    def pred (self, p, name=None, *args, **kwargs):
+        accName = str(self)
+        predName = name or str(p)
+        compName = predName + " . " + accName
+        return Pred( lambda s: p(self(s))
+                   , name = compName
+                   , *args, **kwargs
+                   )
 
     def equals (self, val):
         return Pred(lambda s: self(s) == val, name="(== " + str(val) + ")")

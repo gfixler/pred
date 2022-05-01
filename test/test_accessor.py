@@ -7,6 +7,7 @@ from ..accessor import Accessor, StringAccessor, NumAccessor
 
 
 ident = lambda x: x
+const = lambda x: lambda _: x
 
 
 class Test_Accessor (unittest.TestCase):
@@ -15,24 +16,47 @@ class Test_Accessor (unittest.TestCase):
         self.assertEquals(Accessor(ident)("foo"), "foo")
 
     def test_canNameAccessors (self):
-        accr = Accessor(ident, name="ident")
-        self.assertEquals(accr._name, "ident") # law of demeter violation
+        accr = Accessor(const(True), name="const(True)")
+        # HACK law of demeter violation
+        self.assertEquals(accr._name, "const(True)")
 
     def test_strWorksOnNamedAccessors (self):
         accr = Accessor(ident, name="ident")
         self.assertEquals(str(accr), "ident")
 
-    def test_strYieldsFunctionNameOnUnnamedAccessors (self):
+    def test_strYieldsFunctionStrOnUnnamedAccessors (self):
         accr = Accessor(ident)
-        self.assertEquals(str(accr), str(accr._accFunc)) # law of demeter violation
+        # HACK law of demeter violation
+        self.assertEquals(str(accr), str(accr._accFunc))
 
     def test_canCreatePred (self):
         pred = Accessor(ident).pred(lambda s: len(s) == 7)
         self.assertTrue(pred("testing"))
 
-    def test_canNamePreds (self):
-        pred = Accessor(ident).pred(lambda x: lambda _: x, name="id")
-        self.assertEquals(str(pred), "id")
+    def test_strComposesStrNamesOfNamedAccessorAndPred (self):
+        accr = Accessor(ident, name="ident")
+        pred = accr.pred(const(True), name="const(True)")
+        self.assertEquals(str(pred), "const(True) . ident")
+
+    def test_strComposesStrNameOfNamedAcessorWithFunctionStrOfUnnamedPred (self):
+        accr = Accessor(ident, name="ident")
+        p = const(True)
+        pred = accr.pred(p)
+        # HACK law of demeter violation
+        self.assertEquals(str(pred),  str(p) + " . ident")
+
+    def test_strComposesUnnamedAccessorFunctionStrWithStrOfNamedPred (self):
+        accr = Accessor(ident)
+        pred = accr.pred(const(False), name="const(False)")
+        # HACK law of demeter violation
+        self.assertEquals(str(pred), "const(False) . " + str(accr._accFunc))
+
+    def test_strComposesFunctionStrsOnUnnamedAccessorAndPred (self):
+        accr = Accessor(ident)
+        p = const(True)
+        pred = accr.pred(p)
+        # HACK law of demeter violation
+        self.assertEquals(str(pred), str(p) + " . " + str(accr._accFunc))
 
     def test_canCreateEqualsPred (self):
         accr = StringAccessor(lambda d: d["key"])
