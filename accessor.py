@@ -6,8 +6,9 @@ from pred import Pred
 
 class Accessor (object):
 
-    def __init__ (self, accFunc):
+    def __init__ (self, accFunc, name=None):
         self._accFunc = accFunc
+        self._name = name
 
     def __call__ (self, *args):
         return self._accFunc(*args)
