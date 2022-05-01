@@ -18,6 +18,10 @@ class Test_Accessor (unittest.TestCase):
         accr = Accessor(ident, name="ident")
         self.assertEquals(accr._name, "ident") # law of demeter violation
 
+    def test_strWorksOnNamedAccessors (self):
+        accr = Accessor(ident, name="ident")
+        self.assertEquals(str(accr), "ident")
+
     def test_canCreatePred (self):
         pred = Accessor(ident).pred(lambda s: len(s) == 7)
         self.assertTrue(pred("testing"))
