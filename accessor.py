@@ -14,7 +14,7 @@ class Accessor (object):
         return self._accFunc(*args)
 
     def __str__ (self):
-        return self._name
+        return self._name or str(self._accFunc)
 
     def pred (self, p, *args, **kwargs):
         return Pred(lambda s: p(self(s)), *args, **kwargs)
