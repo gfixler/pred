@@ -197,5 +197,5 @@ class Pred:
             return '\n'.join([ind + "NOT", p])
 
     def pprint (self, *args, **kwargs):
-        print self.pformat(*args, **kwargs)
+        print(self.pformat(*args, **kwargs))
 
