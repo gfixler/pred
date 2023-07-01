@@ -22,7 +22,7 @@ class Accessor:
         compName = predName + " . " + accName
         return Pred( lambda s: p(self(s))
                    , name = compName
-                   , *args, **kwargs
+                   , *args, **kwargs # TODO are these tested?
                    )
 
     def equals (self, val):
