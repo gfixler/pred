@@ -33,7 +33,7 @@ class StringAccessor (Accessor):
 
     def __call__ (self, *args):
         result = self._accFunc(*args)
-        if not isinstance(result, basestring):
+        if not isinstance(result, str):
             try:
                 raise TypeError, "StringAccessor accessed non-string object: " + str(result)
             except:
