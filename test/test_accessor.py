@@ -78,6 +78,7 @@ class Test_StringAccessor (unittest.TestCase):
     def setUp (self):
         self.data = {"name": "Bob"}
         self.name = StringAccessor(lambda d: d["name"])
+        self.namedName = StringAccessor(lambda d: d["name"], name="name")
 
     def test_identityOnStringWorks (self):
         self.assertEqual(StringAccessor(ident)("bar"), "bar")
@@ -92,12 +93,18 @@ class Test_StringAccessor (unittest.TestCase):
     def test_containsPredIsNamedCorrectly (self):
         self.assertEqual(str(self.name.contains("o")), "contains(\"o\")")
 
+    def test_containsPredCombinesWithExistingNameCorrectly (self):
+        self.assertEqual(str(self.namedName.contains("o")), "name.contains(\"o\")")
+
     def test_canCreateStartswithPred (self):
         self.assertTrue(self.name.startswith("B")(self.data))
         self.assertFalse(self.name.startswith("A")(self.data))
 
     def test_startswithPredIsNamedCorrectly (self):
         self.assertEqual(str(self.name.startswith("B")), "startswith(\"B\")")
+
+    def test_startswithPredCombinesWithExistingNameCorrectly (self):
+        self.assertEqual(str(self.namedName.startswith("o")), "name.startswith(\"o\")")
 
     def test_canCreateEndswithPred (self):
         self.assertTrue(self.name.endswith("b")(self.data))
@@ -106,12 +113,18 @@ class Test_StringAccessor (unittest.TestCase):
     def test_endswithPredIsNamedCorrectly (self):
         self.assertEqual(str(self.name.endswith("b")), "endswith(\"b\")")
 
+    def test_endswithPredCombinesWithExistingNameCorrectly (self):
+        self.assertEqual(str(self.namedName.endswith("o")), "name.endswith(\"o\")")
+
     def test_canCreateMatchesPred (self):
         self.assertTrue(self.name.matches(".*\d\d-\d\d.*")({"name": "blue_23-42_hike"}))
         self.assertFalse(self.name.matches(".*\d\d-\d\d.*")({"name": "ab-cd"}))
 
     def test_matchesPredIsNamedCorrectly (self):
         self.assertEqual(str(self.name.matches(".*\d\d-\d\d.*")), "matches(\".*\d\d-\d\d.*\")")
+
+    def test_matchesPredCombinesWithExistingNameCorrectly (self):
+        self.assertEqual(str(self.namedName.matches("o")), "name.matches(\"o\")")
 
 
 class Test_NumAccessor (unittest.TestCase):
@@ -134,6 +147,10 @@ class Test_NumAccessor (unittest.TestCase):
         p = NumAccessor(ident).lt(4)
         self.assertEqual(str(p), "lt(4)")
 
+    def test_ltCombinesWithExistingNameCorrectly (self):
+        p = NumAccessor(ident, name="id").lt(4)
+        self.assertEqual(str(p), "id.lt(4)")
+
     def test_lteOnInt (self):
         p = NumAccessor(ident).lte(4)
         self.assertTrue(p(3))
@@ -144,6 +161,10 @@ class Test_NumAccessor (unittest.TestCase):
         p = NumAccessor(ident).lte(4)
         self.assertEqual(str(p), "lte(4)")
 
+    def test_lteCombinesWithExistingNameCorrectly (self):
+        p = NumAccessor(ident, name="id").lte(4)
+        self.assertEqual(str(p), "id.lte(4)")
+
     def test_eqOnInt (self):
         p = NumAccessor(ident).eq(4)
         self.assertTrue(p(4))
@@ -152,6 +173,10 @@ class Test_NumAccessor (unittest.TestCase):
     def test_eqIsNamedCorrectly (self):
         p = NumAccessor(ident).eq(4)
         self.assertEqual(str(p), "eq(4)")
+
+    def test_eqCombinesWithExistingNameCorrectly (self):
+        p = NumAccessor(ident, name="id").eq(4)
+        self.assertEqual(str(p), "id.eq(4)")
 
     def test_gteOnInt (self):
         p = NumAccessor(ident).gte(4)
@@ -163,6 +188,10 @@ class Test_NumAccessor (unittest.TestCase):
         p = NumAccessor(ident).gte(4)
         self.assertEqual(str(p), "gte(4)")
 
+    def test_gteCombinesWithExistingNameCorrectly (self):
+        p = NumAccessor(ident, name="id").gte(4)
+        self.assertEqual(str(p), "id.gte(4)")
+
     def test_gtOnInt (self):
         p = NumAccessor(ident).gt(4)
         self.assertTrue(p(5))
@@ -171,4 +200,8 @@ class Test_NumAccessor (unittest.TestCase):
     def test_gtIsNamedCorrectly (self):
         p = NumAccessor(ident).gt(4)
         self.assertEqual(str(p), "gt(4)")
+
+    def test_gtCombinesWithExistingNameCorrectly (self):
+        p = NumAccessor(ident, name="id").gt(4)
+        self.assertEqual(str(p), "id.gt(4)")
 

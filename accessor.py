@@ -42,16 +42,28 @@ class StringAccessor (Accessor):
         return result
 
     def contains (self, string):
-        return Pred(lambda s: string in self(s), name="contains(\"" + string + "\")")
+        name = "contains(\"" + string + "\")"
+        if self._name:
+            name = self._name + "." + name
+        return Pred(lambda s: string in self(s), name=name)
 
     def startswith (self, string):
-        return Pred(lambda s: self(s).startswith(string), name="startswith(\"" + string + "\")")
+        name = "startswith(\"" + string + "\")"
+        if self._name:
+            name = self._name + "." + name
+        return Pred(lambda s: self(s).startswith(string), name=name)
 
     def endswith (self, string):
-        return Pred(lambda s: self(s).endswith(string), name="endswith(\"" + string + "\")")
+        name = "endswith(\"" + string + "\")"
+        if self._name:
+            name = self._name + "." + name
+        return Pred(lambda s: self(s).endswith(string), name=name)
 
     def matches (self, pattern):
-        return Pred(lambda s: re.match(pattern, self(s)), name="matches(\"" + pattern + "\")")
+        name = "matches(\"" + pattern + "\")"
+        if self._name:
+            name = self._name + "." + name
+        return Pred(lambda s: re.match(pattern, self(s)), name=name)
 
 
 class NumAccessor (Accessor):
@@ -68,17 +80,32 @@ class NumAccessor (Accessor):
 
 
     def lt (self, n):
-        return Pred(lambda i: self(i) < n, name="lt(" + str(n) + ")")
+        name = "lt(" + str(n) + ")"
+        if self._name:
+            name = self._name + "." + name
+        return Pred(lambda i: self(i) < n, name=name)
 
     def lte (self, n):
-        return Pred(lambda i: self(i) <= n, name="lte(" + str(n) + ")")
+        name = "lte(" + str(n) + ")"
+        if self._name:
+            name = self._name + "." + name
+        return Pred(lambda i: self(i) <= n, name=name)
 
     def eq (self, n):
-        return Pred(lambda i: self(i) == n, name="eq(" + str(n) + ")")
+        name = "eq(" + str(n) + ")"
+        if self._name:
+            name = self._name + "." + name
+        return Pred(lambda i: self(i) == n, name=name)
 
     def gte (self, n):
-        return Pred(lambda i: self(i) >= n, name="gte(" + str(n) + ")")
+        name = "gte(" + str(n) + ")"
+        if self._name:
+            name = self._name + "." + name
+        return Pred(lambda i: self(i) >= n, name=name)
 
     def gt (self, n):
-        return Pred(lambda i: self(i) > n, name="gt(" + str(n) + ")")
+        name = "gt(" + str(n) + ")"
+        if self._name:
+            name = self._name + "." + name
+        return Pred(lambda i: self(i) > n, name=name)
 
