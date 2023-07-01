@@ -4,7 +4,7 @@ import re
 from pred import Pred
 
 
-class Accessor (object):
+class Accessor:
 
     def __init__ (self, accFunc, name=None):
         self._accFunc = accFunc
@@ -33,12 +33,12 @@ class StringAccessor (Accessor):
 
     def __call__ (self, *args):
         result = self._accFunc(*args)
-        if not isinstance(result, basestring):
+        if not isinstance(result, str):
             try:
-                raise TypeError, "StringAccessor accessed non-string object: " + str(result)
+                raise TypeError("StringAccessor accessed non-string object: " + str(result))
             except:
                 # supposedly str can fail (https://stackoverflow.com/a/4857604/955926)
-                raise TypeError, "StringAccessor accessed non-string object"
+                raise TypeError("StringAccessor accessed non-string object")
         return result
 
     def contains (self, string):
@@ -60,10 +60,10 @@ class NumAccessor (Accessor):
         result = self._accFunc(*args)
         if not (isinstance(result, int) or isinstance(result, float)):
             try:
-                raise TypeError, "NumAccessor accessed non-num object: " + str(result)
+                raise TypeError("NumAccessor accessed non-num object: " + str(result))
             except:
                 # supposedly str can fail (https://stackoverflow.com/a/4857604/955926)
-                raise TypeError, "NumAccessor accessed non-num object"
+                raise TypeError("NumAccessor accessed non-num object")
         return result
 
 

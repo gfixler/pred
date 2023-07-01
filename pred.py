@@ -1,7 +1,7 @@
 inParens = lambda x: "(" + str(x) + ")"
 
 
-class Pred (object):
+class Pred:
 
     def __init__ (self, pred=None, name=None, fix=None, typeCon=None):
         self._op = "PRED"
@@ -20,9 +20,9 @@ class Pred (object):
             if not typePred(x):
                 if isinstance(typeSpec, list):
                     typesStr = " or ".join(map(str, typeSpec))
-                    raise TypeError, "Pred requires " + typesStr + "; received " + str(type(x))
+                    raise TypeError("Pred requires " + typesStr + "; received " + str(type(x)))
                 else:
-                    raise TypeError, "Pred requires " + str(typeSpec) + "; received " + str(type(x))
+                    raise TypeError("Pred requires " + str(typeSpec) + "; received " + str(type(x)))
         if   self._op == "PRED": return self._pred(x)
         elif self._op == "AND":  return self._left(x) and self._right(x)
         elif self._op == "SEQ":  return self._left(x) and self._right(x)
@@ -45,7 +45,7 @@ class Pred (object):
             if other._typeCon:
                 otherSpec, _ = other._typeCon
                 if selfSpec != otherSpec:
-                    raise TypeError, "Cannot AND " + str(selfSpec) + " Pred with " + str(otherSpec) + " Pred"
+                    raise TypeError("Cannot AND " + str(selfSpec) + " Pred with " + str(otherSpec) + " Pred")
         p = Pred()
         p._op = "AND"
         p._left = self
@@ -60,7 +60,7 @@ class Pred (object):
             if other._typeCon:
                 otherSpec, _ = other._typeCon
                 if selfSpec != otherSpec:
-                    raise TypeError, "Cannot SEQ " + str(selfSpec) + " Pred with " + str(otherSpec) + " Pred"
+                    raise TypeError("Cannot SEQ " + str(selfSpec) + " Pred with " + str(otherSpec) + " Pred")
         p = Pred()
         p._op = "SEQ"
         p._left = self
@@ -74,7 +74,7 @@ class Pred (object):
             if other._typeCon:
                 otherSpec, _ = other._typeCon
                 if selfSpec != otherSpec:
-                    raise TypeError, "Cannot OR " + str(selfSpec) + " Pred with " + str(otherSpec) + " Pred"
+                    raise TypeError("Cannot OR " + str(selfSpec) + " Pred with " + str(otherSpec) + " Pred")
         p = Pred()
         p._op = "OR"
         p._left = self
@@ -197,5 +197,5 @@ class Pred (object):
             return '\n'.join([ind + "NOT", p])
 
     def pprint (self, *args, **kwargs):
-        print self.pformat(*args, **kwargs)
+        print(self.pformat(*args, **kwargs))
 
