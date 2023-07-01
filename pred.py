@@ -1,7 +1,7 @@
 inParens = lambda x: "(" + str(x) + ")"
 
 
-class Pred (object):
+class Pred:
 
     def __init__ (self, pred=None, name=None, fix=None, typeCon=None):
         self._op = "PRED"

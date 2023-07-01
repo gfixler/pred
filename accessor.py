@@ -4,7 +4,7 @@ import re
 from pred import Pred
 
 
-class Accessor (object):
+class Accessor:
 
     def __init__ (self, accFunc, name=None):
         self._accFunc = accFunc
